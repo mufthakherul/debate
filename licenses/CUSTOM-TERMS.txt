@@ -1,0 +1,28 @@
+CUSTOM TERMS FOR VIRTUAL DEBATING CLUB PLATFORM
+
+Effective Date: 2025
+
+1. SCOPE
+These custom terms apply to specific proprietary components and extensions
+of the Virtual Debating Club platform that are not covered by the standard
+open-source licenses (MIT, Apache-2.0, GPL-3.0).
+
+2. PERMITTED USE
+- Academic and educational use is freely permitted
+- Non-commercial use for debate clubs and organizations is permitted
+- Commercial use requires explicit written permission
+
+3. RESTRICTIONS
+- You may not use custom components for commercial debate platforms without permission
+- You may not remove or modify attribution notices
+- You must maintain the integrity of the debating framework
+
+4. CONTRIBUTIONS
+By contributing custom components, you agree to license them under these same terms
+unless explicitly stated otherwise.
+
+5. WARRANTY DISCLAIMER
+Custom components are provided "as is" without warranty of any kind.
+
+6. CONTACT
+For permissions or questions: contact the project maintainers via GitHub.
