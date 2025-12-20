@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPI Debating Club - Virtual Debate Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎤 RPI Debating Club</h1>
+            <p>Virtual Debate Platform</p>
+        </header>
+
+        <!-- Landing Page -->
+        <div id="landing-page">
+            <div class="welcome-section">
+                <h2>Welcome to Virtual Debates</h2>
+                <p>Create or join a debate room to get started</p>
+            </div>
+
+            <div class="room-creation">
+                <h3>Start a New Debate</h3>
+                <input type="text" id="room-id" placeholder="Enter Room ID" />
+                <input type="text" id="user-name" placeholder="Your Name" />
+                <select id="user-role">
+                    <option value="moderator">Moderator</option>
+                    <option value="speaker">Speaker</option>
+                    <option value="judge">Judge</option>
+                    <option value="observer">Observer</option>
+                </select>
+                <button id="join-room-btn" class="btn btn-primary">Join/Create Room</button>
+            </div>
+        </div>
+
+        <!-- Debate Room -->
+        <div id="debate-room" style="display: none;">
+            <div class="room-header">
+                <div class="room-info">
+                    <h2 id="room-title">Debate Room</h2>
+                    <p id="room-participants">Participants: 0</p>
+                </div>
+                <button id="leave-room-btn" class="btn btn-secondary">Leave Room</button>
+            </div>
+
+            <!-- Motion Section -->
+            <div class="motion-section">
+                <h3>Debate Motion</h3>
+                <div id="motion-display" class="motion-display">
+                    <p id="motion-text">No motion set yet</p>
+                </div>
+                <div id="motion-setter" class="motion-setter">
+                    <input type="text" id="motion-input" placeholder="Enter debate motion" />
+                    <button id="set-motion-btn" class="btn btn-primary">Set Motion</button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <!-- Timer Section -->
+                <div class="timer-section">
+                    <h3>Speaker Timer</h3>
+                    <div class="timer-display">
+                        <div id="timer">00:00</div>
+                        <div id="current-speaker">No speaker active</div>
+                    </div>
+                    <div class="timer-controls">
+                        <input type="number" id="timer-duration" placeholder="Minutes" min="1" max="30" value="5" />
+                        <button id="start-timer-btn" class="btn btn-success">Start</button>
+                        <button id="pause-timer-btn" class="btn btn-warning">Pause</button>
+                        <button id="reset-timer-btn" class="btn btn-secondary">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Speaker Queue -->
+                <div class="queue-section">
+                    <h3>Speaker Queue</h3>
+                    <div id="speaker-queue" class="speaker-queue">
+                        <p class="empty-message">No speakers in queue</p>
+                    </div>
+                    <div class="queue-controls">
+                        <input type="text" id="speaker-name-input" placeholder="Speaker Name" />
+                        <select id="speaker-type">
+                            <option value="proposition">Proposition</option>
+                            <option value="opposition">Opposition</option>
+                            <option value="reply">Reply Speech</option>
+                        </select>
+                        <button id="add-speaker-btn" class="btn btn-primary">Add Speaker</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Judge Scoring Section -->
+            <div id="judge-section" class="judge-section" style="display: none;">
+                <h3>Judge Scoring</h3>
+                <div class="score-form">
+                    <div class="score-item">
+                        <label>Proposition Team:</label>
+                        <input type="number" id="prop-score" min="0" max="100" placeholder="Score out of 100" />
+                    </div>
+                    <div class="score-item">
+                        <label>Opposition Team:</label>
+                        <input type="number" id="opp-score" min="0" max="100" placeholder="Score out of 100" />
+                    </div>
+                    <div class="score-item">
+                        <label>Comments:</label>
+                        <textarea id="judge-comments" rows="3" placeholder="Your feedback"></textarea>
+                    </div>
+                    <button id="submit-score-btn" class="btn btn-success">Submit Score</button>
+                </div>
+                <div id="scores-display" class="scores-display">
+                    <h4>Submitted Scores</h4>
+                    <div id="scores-list"></div>
+                </div>
+            </div>
+
+            <!-- Participants List -->
+            <div class="participants-section">
+                <h3>Participants</h3>
+                <div id="participants-list" class="participants-list"></div>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="chat-section">
+                <h3>Discussion</h3>
+                <div id="chat-messages" class="chat-messages"></div>
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Type a message..." />
+                    <button id="send-message-btn" class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
