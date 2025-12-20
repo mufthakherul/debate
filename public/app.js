@@ -266,13 +266,23 @@ function updateSpeakerQueue(queue) {
     queue.forEach((speaker, index) => {
         const div = document.createElement('div');
         div.className = 'speaker-item';
-        div.innerHTML = `
-            <div class="speaker-info">
-                <div class="speaker-name">${speaker.name}</div>
-                <div class="speaker-type ${speaker.type}">${speaker.type}</div>
-            </div>
-            ${currentRole === 'moderator' ? `<button class="btn btn-danger btn-small" onclick="removeSpeaker(${index})">Remove</button>` : ''}
+        
+        const speakerInfo = document.createElement('div');
+        speakerInfo.className = 'speaker-info';
+        speakerInfo.innerHTML = `
+            <div class="speaker-name">${speaker.name}</div>
+            <div class="speaker-type ${speaker.type}">${speaker.type}</div>
         `;
+        div.appendChild(speakerInfo);
+        
+        if (currentRole === 'moderator') {
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'btn btn-danger btn-small';
+            removeBtn.textContent = 'Remove';
+            removeBtn.addEventListener('click', () => removeSpeaker(index));
+            div.appendChild(removeBtn);
+        }
+        
         speakerQueue.appendChild(div);
     });
 }
@@ -396,6 +406,3 @@ socket.on('scores-updated', (data) => {
 socket.on('new-message', (data) => {
     addChatMessage(data.userName, data.message, data.timestamp);
 });
-
-// Make removeSpeaker available globally
-window.removeSpeaker = removeSpeaker;

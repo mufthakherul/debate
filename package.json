@@ -1,7 +1,7 @@
 {
   "name": "debate",
   "version": "1.0.0",
-  "description": "A Internal app for RPI debating Club",
+  "description": "An internal app for RPI debating Club",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
