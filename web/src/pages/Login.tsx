@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true)
@@ -8,12 +9,29 @@ export default function Login() {
     email: '',
     password: ''
   })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  
+  const { login, register } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement actual authentication
-    console.log('Form submitted:', formData)
-    alert('Authentication not yet implemented')
+    setError('')
+    setLoading(true)
+    
+    try {
+      if (isLogin) {
+        await login(formData.username, formData.password)
+      } else {
+        await register(formData.email, formData.username, formData.password)
+      }
+      navigate('/dashboard')
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +56,10 @@ export default function Login() {
               className={`flex-1 py-2 rounded-md transition-colors ${
                 isLogin ? 'bg-white text-blue-900' : 'text-white'
               }`}
-              onClick={() => setIsLogin(true)}
+              onClick={() => {
+                setIsLogin(true)
+                setError('')
+              }}
             >
               Login
             </button>
@@ -46,11 +67,20 @@ export default function Login() {
               className={`flex-1 py-2 rounded-md transition-colors ${
                 !isLogin ? 'bg-white text-blue-900' : 'text-white'
               }`}
-              onClick={() => setIsLogin(false)}
+              onClick={() => {
+                setIsLogin(false)
+                setError('')
+              }}
             >
               Register
             </button>
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-white text-sm">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
@@ -105,9 +135,10 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full bg-white text-blue-900 font-semibold py-3 rounded-lg hover:bg-blue-50 transition-colors"
+              disabled={loading}
+              className="w-full bg-white text-blue-900 font-semibold py-3 rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLogin ? 'Login' : 'Register'}
+              {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
             </button>
           </form>
         </div>
