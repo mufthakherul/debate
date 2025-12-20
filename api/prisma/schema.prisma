@@ -18,10 +18,47 @@ enum Role {
 
 enum DebateStatus {
   DRAFT
+  SCHEDULED
   OPEN
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum ParticipantRole {
+  DEBATER
+  JUDGE
+  TIMEKEEPER
+  MODERATOR
+}
+
+enum TeamSide {
+  AFFIRMATIVE
+  NEGATIVE
+  NEUTRAL
+}
+
+enum RoundType {
+  OPENING
+  REBUTTAL
+  CROSS_EXAMINATION
+  CLOSING
+}
+
+enum NotificationType {
+  DEBATE_INVITATION
+  DEBATE_STARTING
+  DEBATE_COMPLETED
+  SCORE_SUBMITTED
+  ROLE_ASSIGNED
+  SYSTEM
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
 }
 
 model User {
@@ -33,24 +70,143 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  debates   Debate[]
+  debates            Debate[]
+  refreshTokens      RefreshToken[]
+  passwordResetToken PasswordResetToken?
+  participants       DebateParticipant[]
+  scores             Score[]
+  notifications      Notification[]
   
   @@map("users")
 }
 
-model Debate {
-  id          String       @id @default(uuid())
-  title       String
-  description String?
-  topic       String
-  status      DebateStatus @default(DRAFT)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  startTime   DateTime?
-  endTime     DateTime?
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
   
-  creatorId   String
-  creator     User         @relation(fields: [creatorId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("password_reset_tokens")
+}
+
+model Debate {
+  id           String       @id @default(uuid())
+  title        String
+  description  String?
+  status       DebateStatus @default(DRAFT)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  scheduledAt  DateTime?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  isPublic     Boolean      @default(false)
+  
+  creatorId    String
+  creator      User                @relation(fields: [creatorId], references: [id])
+  
+  topicId      String?
+  topic        Topic?              @relation(fields: [topicId], references: [id])
+  
+  participants DebateParticipant[]
+  rounds       DebateRound[]
+  scores       Score[]
   
   @@map("debates")
+}
+
+model DebateParticipant {
+  id        String          @id @default(uuid())
+  role      ParticipantRole
+  teamSide  TeamSide        @default(NEUTRAL)
+  createdAt DateTime        @default(now())
+  
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  debateId String
+  debate   Debate @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  
+  scores Score[]
+  
+  @@unique([debateId, userId])
+  @@map("debate_participants")
+}
+
+model DebateRound {
+  id              String    @id @default(uuid())
+  order           Int
+  type            RoundType
+  durationSeconds Int
+  createdAt       DateTime  @default(now())
+  
+  debateId String
+  debate   Debate @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  
+  @@unique([debateId, order])
+  @@map("debate_rounds")
+}
+
+model Topic {
+  id          String          @id @default(uuid())
+  title       String
+  description String?
+  category    String?
+  difficulty  DifficultyLevel @default(INTERMEDIATE)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+  debates Debate[]
+  
+  @@map("topics")
+}
+
+model Score {
+  id          String   @id @default(uuid())
+  category    String
+  score       Float
+  maxScore    Float
+  weight      Float    @default(1.0)
+  feedback    String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  debateId String
+  debate   Debate @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  
+  judgeId String
+  judge   User   @relation(fields: [judgeId], references: [id])
+  
+  participantId String
+  participant   DebateParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  
+  @@map("scores")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  type      NotificationType
+  payload   Json
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
 }
