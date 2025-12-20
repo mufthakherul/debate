@@ -1,0 +1,57 @@
+CUSTOM TERMS AND CONDITIONS
+
+Copyright (c) 2025 mufthakherul
+
+OWNERSHIP AND BRANDING:
+The project owner (mufthakherul) retains all ownership rights to the project,
+including but not limited to the project name, branding, logos, and associated
+trademarks. These rights are reserved and are not transferred through any license
+granted in this or accompanying license files.
+
+DERIVATIVE WORKS:
+Any derivative works based on this project must:
+1. Clearly acknowledge the origin of the work and credit the original project
+   and its owner (mufthakherul).
+2. Retain all branding elements (names, logos, trademarks) of the original
+   project unless explicit written permission has been granted by the owner
+   to modify or remove such branding.
+3. Not misrepresent the origin of the software or imply endorsement by the
+   original owner without permission.
+
+THIRD-PARTY INTEGRATIONS:
+When integrating this software with third-party platforms, services, or APIs,
+users must:
+1. Respect and comply with all terms of service, usage policies, and licensing
+   requirements of those third-party platforms.
+2. Ensure that any integration does not violate the rights of the third-party
+   platform or service providers.
+3. Assume full responsibility for compliance with third-party terms.
+
+NO WARRANTY:
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE FOR ANY
+DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT, OR OTHERWISE, ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+CONFLICT RESOLUTION:
+In the event of a conflict between these custom terms and any other license
+terms applicable to this project, the most restrictive terms shall apply to
+ensure maximum protection of all rights and compliance with all obligations.
+
+COMMERCIAL USE AND DISTRIBUTION:
+Before using this software for commercial purposes, distributing it, or creating
+derivative works for commercial distribution, you MUST:
+1. Consult with qualified legal counsel to ensure compliance with all applicable
+   license terms and conditions.
+2. Obtain any necessary permissions or licenses from the project owner and any
+   third-party rights holders.
+3. Ensure that your use does not infringe upon any proprietary rights or violate
+   any applicable laws or regulations.
+
+ACCEPTANCE:
+By using, copying, modifying, or distributing this software, you acknowledge
+that you have read, understood, and agree to be bound by these custom terms
+and all other applicable license terms.

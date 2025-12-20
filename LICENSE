@@ -1,0 +1,31 @@
+COMPOSITE LICENSE NOTICE
+
+This project is licensed under a composite licensing structure. Different components
+and files within this repository may be subject to different licenses.
+
+The applicable licenses can be found in the `licenses/` directory:
+- MIT License (licenses/MIT.txt)
+- Apache License 2.0 (licenses/Apache-2.0.txt)
+- GNU General Public License v3.0 (licenses/GPL-3.0.txt)
+- Custom Terms (licenses/CUSTOM-TERMS.txt)
+
+IMPORTANT NOTICES:
+
+1. LICENSE CONFLICTS: In case of conflicts between different license terms, the most
+   restrictive terms shall apply to ensure compliance with all applicable licenses.
+
+2. OWNER BRANDING RIGHTS: The project owner (mufthakherul) retains all rights to
+   the project branding, name, and associated trademarks. Use of the project name
+   and branding in derivative works requires explicit permission from the owner.
+
+3. COMMERCIAL USE: Before using this software for commercial purposes or distributing
+   derivative works, you must consult with legal counsel to ensure compliance with
+   all applicable license terms.
+
+4. NO WARRANTY: This software is provided "as is" without warranty of any kind,
+   express or implied, as detailed in the individual license files.
+
+For detailed terms and conditions, please refer to the individual license files
+in the `licenses/` directory.
+
+Copyright (c) 2025 mufthakherul
