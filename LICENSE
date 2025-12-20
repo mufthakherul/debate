@@ -1,0 +1,13 @@
+COMPOSITE LICENSE NOTICE
+
+This project uses multiple licenses for different components. Please refer to the
+licenses/ directory for full license texts.
+
+Components and their respective licenses:
+- Core platform code: MIT License (see licenses/MIT.txt)
+- Shared utilities: Apache License 2.0 (see licenses/Apache-2.0.txt)
+- Certain extensions: GNU General Public License v3.0 (see licenses/GPL-3.0.txt)
+- Custom components: Custom Terms (see licenses/CUSTOM-TERMS.txt)
+
+Unless otherwise specified, the default license is MIT.
+See individual file headers for specific licensing information.
