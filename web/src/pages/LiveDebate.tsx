@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ConfirmModal } from '../components/ConfirmModal'
 
 // Mock data for the live debate
 const mockDebateData = {
@@ -40,6 +41,7 @@ const mockDebateData = {
     { id: 5, name: 'David Lee', speaking: false },
     { id: 6, name: 'Frank Miller', speaking: false },
   ],
+  audienceCount: 127,
   streaming: {
     youtube: 'Connected',
     facebook: 'Disconnected',
@@ -57,11 +59,10 @@ export default function LiveDebate() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'chat' | 'qa'>('chat')
   const [announcementTab, setAnnouncementTab] = useState<'announcements' | 'qa'>('announcements')
+  const [showLeaveModal, setShowLeaveModal] = useState(false)
 
   const handleLeave = () => {
-    if (window.confirm('Are you sure you want to leave this debate?')) {
-      navigate('/debates')
-    }
+    navigate('/debates')
   }
 
   const formatTime = (seconds: number) => {
@@ -103,7 +104,7 @@ export default function LiveDebate() {
               <span className="px-2 py-1 bg-green-600 text-white text-xs rounded">Mod: {mockDebateData.roles.moderator}</span>
               <span className="px-2 py-1 bg-orange-600 text-white text-xs rounded">Time: {mockDebateData.roles.timekeeper}</span>
               <button
-                onClick={handleLeave}
+                onClick={() => setShowLeaveModal(true)}
                 className="px-4 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded transition-colors"
                 aria-label="Leave debate"
               >
@@ -145,7 +146,7 @@ export default function LiveDebate() {
 
             <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
               <h3 className="text-white font-semibold mb-3 text-sm">Audience</h3>
-              <div className="text-white text-2xl font-bold">127</div>
+              <div className="text-white text-2xl font-bold">{mockDebateData.audienceCount}</div>
               <div className="text-blue-300 text-xs">viewers online</div>
             </div>
           </aside>
@@ -462,6 +463,17 @@ export default function LiveDebate() {
           </section>
         </div>
       </div>
+
+      {/* Leave Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showLeaveModal}
+        title="Leave Debate"
+        message="Are you sure you want to leave this debate? You may miss important moments."
+        confirmText="Leave"
+        cancelText="Stay"
+        onConfirm={handleLeave}
+        onCancel={() => setShowLeaveModal(false)}
+      />
     </div>
   )
 }
