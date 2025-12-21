@@ -2,6 +2,17 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ConfirmModal } from '../components/ConfirmModal'
 
+// Tooltip component for accessibility
+const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => (
+  <div className="group relative inline-block">
+    {children}
+    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+      {text}
+      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+    </div>
+  </div>
+)
+
 // Mock data for the live debate
 const mockDebateData = {
   title: 'Team A vs Team B',
@@ -60,6 +71,7 @@ export default function LiveDebate() {
   const [activeTab, setActiveTab] = useState<'chat' | 'qa'>('chat')
   const [announcementTab, setAnnouncementTab] = useState<'announcements' | 'qa'>('announcements')
   const [showLeaveModal, setShowLeaveModal] = useState(false)
+  const [audienceCollapsed, setAudienceCollapsed] = useState(false)
 
   const handleLeave = () => {
     navigate('/debates')
@@ -73,107 +85,171 @@ export default function LiveDebate() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-lg border-b border-white/20 sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 gap-4 flex-wrap">
-            <div className="flex items-center gap-4">
-              <h1 className="text-white text-lg font-bold">Virtual Debating Club</h1>
+      {/* Header - More compact and accessible */}
+      <header className="bg-slate-900/95 backdrop-blur-lg border-b border-slate-700/50 sticky top-0 z-50 shadow-lg">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-between min-h-[64px] gap-3 py-2 flex-wrap">
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <h1 className="text-white text-base sm:text-lg font-bold">Virtual Debating Club</h1>
               <div className="hidden md:block h-6 w-px bg-white/30" />
-              <h2 className="text-white font-semibold">{mockDebateData.title}</h2>
-            </div>
-
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="px-3 py-1 bg-red-500 text-white text-sm font-semibold rounded-full flex items-center gap-1">
-                <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                {mockDebateData.status}
-              </span>
-              <span className="px-3 py-1 bg-indigo-500 text-white text-sm rounded-full">
-                {mockDebateData.currentRound}
-              </span>
-              <span className="px-3 py-1 bg-blue-500 text-white text-sm rounded-full">
-                Speaker: {mockDebateData.currentSpeaker}
-              </span>
-              <span className="px-3 py-1 bg-slate-700 text-white text-sm font-mono rounded-full">
-                {formatTime(mockDebateData.timeRemaining)}
-              </span>
+              <h2 className="text-white text-sm sm:text-base font-semibold">{mockDebateData.title}</h2>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded">Host: {mockDebateData.roles.host}</span>
-              <span className="px-2 py-1 bg-green-600 text-white text-xs rounded">Mod: {mockDebateData.roles.moderator}</span>
-              <span className="px-2 py-1 bg-orange-600 text-white text-xs rounded">Time: {mockDebateData.roles.timekeeper}</span>
-              <button
-                onClick={() => setShowLeaveModal(true)}
-                className="px-4 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded transition-colors"
-                aria-label="Leave debate"
-              >
-                Leave
-              </button>
+              <span className="px-2.5 py-1 bg-red-500 text-white text-xs font-semibold rounded-full flex items-center gap-1.5 shadow-md" title="Live broadcast">
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                {mockDebateData.status}
+              </span>
+              <span className="px-2.5 py-1 bg-indigo-600 text-white text-xs rounded-full shadow-sm" title="Current round">
+                {mockDebateData.currentRound}
+              </span>
+              <span className="hidden sm:inline-flex px-2 py-1 bg-purple-700 text-white text-xs rounded" title="Host">
+                Host: {mockDebateData.roles.host}
+              </span>
+              <span className="hidden sm:inline-flex px-2 py-1 bg-green-700 text-white text-xs rounded" title="Moderator">
+                Mod: {mockDebateData.roles.moderator}
+              </span>
+              <span className="hidden md:inline-flex px-2 py-1 bg-orange-700 text-white text-xs rounded" title="Timekeeper">
+                Time: {mockDebateData.roles.timekeeper}
+              </span>
+              <Tooltip text="Leave debate session">
+                <button
+                  onClick={() => setShowLeaveModal(true)}
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                  aria-label="Leave debate"
+                >
+                  Leave
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-12 gap-4">
-          {/* Left Rail - Audience Actions */}
-          <aside className="col-span-12 lg:col-span-2 space-y-4">
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
-              <h3 className="text-white font-semibold mb-3 text-sm">Audience Actions</h3>
-              <div className="space-y-2">
-                <button className="w-full px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded transition-colors">
-                  🙋 Raise Hand
-                </button>
-                <button className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
-                  🎤 Request to Speak
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
-              <h3 className="text-white font-semibold mb-3 text-sm">View Requests</h3>
-              <div className="space-y-2">
-                {mockDebateData.audienceRequests.map((req) => (
-                  <div key={req.id} className="text-xs text-white bg-white/10 rounded p-2">
-                    <div className="font-medium">{req.name}</div>
-                    <div className="text-blue-300">{req.type} - {req.timestamp}</div>
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 lg:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
+          
+          {/* Left Rail - Collapsible Audience Section */}
+          <aside className="lg:col-span-3 xl:col-span-2 space-y-4">
+            <div className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl">
+              <button
+                onClick={() => setAudienceCollapsed(!audienceCollapsed)}
+                className="w-full flex items-center justify-between mb-3 text-white font-semibold text-sm hover:text-blue-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded p-1"
+                aria-expanded={!audienceCollapsed}
+              >
+                <span className="flex items-center gap-2">
+                  👥 Audience & Requests
+                </span>
+                <span className={`transform transition-transform ${audienceCollapsed ? '' : 'rotate-180'}`}>
+                  ▼
+                </span>
+              </button>
+              
+              {!audienceCollapsed && (
+                <>
+                  <div className="mb-4">
+                    <div className="text-white text-3xl font-bold text-center">{mockDebateData.audienceCount}</div>
+                    <div className="text-blue-300 text-xs text-center">viewers online</div>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
-              <h3 className="text-white font-semibold mb-3 text-sm">Audience</h3>
-              <div className="text-white text-2xl font-bold">{mockDebateData.audienceCount}</div>
-              <div className="text-blue-300 text-xs">viewers online</div>
+                  <div className="space-y-2 mb-4">
+                    <Tooltip text="Raise your hand to get attention">
+                      <button className="w-full px-3 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        🙋 Raise Hand
+                      </button>
+                    </Tooltip>
+                    <Tooltip text="Request permission to speak">
+                      <button className="w-full px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        🎤 Request to Speak
+                      </button>
+                    </Tooltip>
+                  </div>
+
+                  <div className="border-t border-slate-700/50 pt-3">
+                    <h4 className="text-white font-semibold mb-2 text-xs text-slate-300">View Requests</h4>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {mockDebateData.audienceRequests.map((req) => (
+                        <div key={req.id} className="text-xs text-white bg-slate-700/50 rounded-lg p-2.5 hover:bg-slate-700 transition-colors">
+                          <div className="font-medium">{req.name}</div>
+                          <div className="text-blue-300 text-xs">{req.type} • {req.timestamp}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </aside>
 
-          {/* Main Stage */}
-          <main className="col-span-12 lg:col-span-7 space-y-4" role="main">
-            {/* Team Panels */}
-            <div className="grid md:grid-cols-2 gap-4">
+          {/* Main Stage - Centered Content */}
+          <main className="lg:col-span-6 xl:col-span-7 space-y-4" role="main">
+            
+            {/* Centered Current Speaker Highlight */}
+            <section className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl p-5 border border-emerald-500/30 shadow-2xl" aria-label="Current speaker">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left flex-1">
+                  <h3 className="text-emerald-100 font-semibold mb-1 text-xs uppercase tracking-wide">Currently Speaking</h3>
+                  <div className="text-white text-2xl sm:text-3xl font-bold mb-1">{mockDebateData.currentSpeaker}</div>
+                  <div className="text-emerald-100 text-sm">Team {mockDebateData.currentTeam} • {mockDebateData.currentRound}</div>
+                </div>
+                <div className="flex-shrink-0">
+                  <div className="text-white text-4xl sm:text-5xl font-mono font-bold text-center px-6 py-3 bg-emerald-900/40 rounded-xl backdrop-blur-sm border border-emerald-400/30">
+                    {formatTime(mockDebateData.timeRemaining)}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Timekeeper Controls - Right below Current Speaker */}
+            <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Timekeeper controls">
+              <h3 className="text-white font-semibold mb-3 text-sm">⏱️ Timekeeper Controls</h3>
+              <div className="flex flex-wrap gap-2">
+                <Tooltip text="Start the timer">
+                  <button className="flex-1 min-w-[80px] px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 font-medium text-sm">
+                    ▶ Start
+                  </button>
+                </Tooltip>
+                <Tooltip text="Pause the timer">
+                  <button className="flex-1 min-w-[80px] px-4 py-2.5 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 font-medium text-sm">
+                    ⏸ Pause
+                  </button>
+                </Tooltip>
+                <Tooltip text="Stop the timer">
+                  <button className="flex-1 min-w-[80px] px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 font-medium text-sm">
+                    ⏹ Stop
+                  </button>
+                </Tooltip>
+                <Tooltip text="Reset the timer">
+                  <button className="flex-1 min-w-[80px] px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-sm">
+                    🔄 Reset
+                  </button>
+                </Tooltip>
+              </div>
+            </section>
+
+            {/* Team Panels and Judges - Horizontal Layout */}
+            <div className="grid sm:grid-cols-2 gap-4">
               {/* Team A */}
-              <section className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20" aria-label="Team A">
-                <h3 className="text-white font-bold mb-3 text-lg border-b border-white/20 pb-2">
+              <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Team A">
+                <h3 className="text-white font-bold mb-3 text-base border-b border-slate-700/50 pb-2 flex items-center gap-2">
+                  <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
                   Team A (Pro)
                 </h3>
                 <div className="space-y-2">
                   {mockDebateData.teamA.map((member) => (
                     <div
                       key={member.id}
-                      className={`p-3 rounded transition-all ${
+                      className={`p-3 rounded-lg transition-all ${
                         member.speaking
-                          ? 'bg-green-500/30 border-2 border-green-400 ring-2 ring-green-400'
-                          : 'bg-white/5'
+                          ? 'bg-emerald-600/30 border-2 border-emerald-400 ring-2 ring-emerald-400/50 shadow-lg'
+                          : 'bg-slate-700/30 hover:bg-slate-700/50'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-white font-medium">{member.name}</span>
+                        <span className="text-white font-medium text-sm">{member.name}</span>
                         {member.speaking && (
-                          <span className="px-2 py-1 bg-green-500 text-white text-xs rounded">
+                          <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full font-semibold animate-pulse">
                             Speaking
                           </span>
                         )}
@@ -184,24 +260,25 @@ export default function LiveDebate() {
               </section>
 
               {/* Team B */}
-              <section className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20" aria-label="Team B">
-                <h3 className="text-white font-bold mb-3 text-lg border-b border-white/20 pb-2">
+              <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Team B">
+                <h3 className="text-white font-bold mb-3 text-base border-b border-slate-700/50 pb-2 flex items-center gap-2">
+                  <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
                   Team B (Con)
                 </h3>
                 <div className="space-y-2">
                   {mockDebateData.teamB.map((member) => (
                     <div
                       key={member.id}
-                      className={`p-3 rounded transition-all ${
+                      className={`p-3 rounded-lg transition-all ${
                         member.speaking
-                          ? 'bg-green-500/30 border-2 border-green-400 ring-2 ring-green-400'
-                          : 'bg-white/5'
+                          ? 'bg-emerald-600/30 border-2 border-emerald-400 ring-2 ring-emerald-400/50 shadow-lg'
+                          : 'bg-slate-700/30 hover:bg-slate-700/50'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-white font-medium">{member.name}</span>
+                        <span className="text-white font-medium text-sm">{member.name}</span>
                         {member.speaking && (
-                          <span className="px-2 py-1 bg-green-500 text-white text-xs rounded">
+                          <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full font-semibold animate-pulse">
                             Speaking
                           </span>
                         )}
@@ -212,104 +289,116 @@ export default function LiveDebate() {
               </section>
             </div>
 
-            {/* Judges Row */}
-            <section className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20" aria-label="Judges panel">
-              <h3 className="text-white font-semibold mb-3">Judges Panel</h3>
-              <div className="flex flex-wrap gap-3">
+            {/* Judges Panel - Full width below teams */}
+            <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Judges panel">
+              <h3 className="text-white font-semibold mb-3 text-sm">⚖️ Judges Panel</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {mockDebateData.roles.judges.map((judge, index) => (
                   <div
                     key={index}
-                    className="flex-1 min-w-[150px] bg-white/10 rounded-lg p-3 text-center"
+                    className="bg-slate-700/40 rounded-lg p-3 text-center hover:bg-slate-700/60 transition-colors border border-slate-600/30"
                   >
-                    <div className="text-white font-medium">{judge}</div>
-                    <div className="text-blue-300 text-sm mt-1">⚖️ Judge</div>
+                    <div className="text-white font-medium text-sm">{judge}</div>
+                    <div className="text-blue-300 text-xs mt-1">⚖️ Judge</div>
                   </div>
                 ))}
               </div>
             </section>
 
-            {/* Timekeeper Widget */}
-            <section className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20" aria-label="Timekeeper controls">
-              <h3 className="text-white font-semibold mb-3">Timekeeper Controls</h3>
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="flex gap-2">
-                  <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition-colors">
-                    ▶ Start
-                  </button>
-                  <button className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded transition-colors">
-                    ⏸ Pause
-                  </button>
-                  <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition-colors">
-                    ⏹ Stop
-                  </button>
-                  <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
-                    🔄 Reset
-                  </button>
-                </div>
-                <div className="text-white text-3xl font-mono font-bold">
-                  {formatTime(mockDebateData.timeRemaining)}
-                </div>
+            {/* Compact Streaming Status */}
+            <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Streaming status">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-white font-semibold text-sm mr-2">📡 Streaming:</h3>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                  mockDebateData.streaming.youtube === 'Connected'
+                    ? 'bg-green-600/80 text-white'
+                    : 'bg-slate-700 text-slate-400'
+                }`} title="YouTube streaming status">
+                  YouTube
+                </span>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                  mockDebateData.streaming.facebook === 'Connected'
+                    ? 'bg-green-600/80 text-white'
+                    : 'bg-slate-700 text-slate-400'
+                }`} title="Facebook streaming status">
+                  Facebook
+                </span>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                  mockDebateData.streaming.twitch === 'Connected'
+                    ? 'bg-green-600/80 text-white'
+                    : 'bg-slate-700 text-slate-400'
+                }`} title="Twitch streaming status">
+                  Twitch
+                </span>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                  mockDebateData.streaming.rtmp === 'Connected'
+                    ? 'bg-green-600/80 text-white'
+                    : 'bg-slate-700 text-slate-400'
+                }`} title="RTMP streaming status">
+                  RTMP
+                </span>
+                <div className="h-4 w-px bg-slate-600 mx-1"></div>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 ${
+                  mockDebateData.recording
+                    ? 'bg-red-600/80 text-white'
+                    : 'bg-slate-700 text-slate-400'
+                }`} title="Recording status">
+                  {mockDebateData.recording && <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>}
+                  {mockDebateData.recording ? 'Recording' : 'Not Recording'}
+                </span>
               </div>
             </section>
           </main>
 
           {/* Right Rail */}
-          <aside className="col-span-12 lg:col-span-3 space-y-4">
-            {/* Current Speaker Card */}
-            <section className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-lg p-4 border border-white/20 shadow-lg" aria-label="Current speaker">
-              <h3 className="text-white font-semibold mb-2 text-sm">Current Speaker</h3>
-              <div className="text-white text-xl font-bold mb-1">{mockDebateData.currentSpeaker}</div>
-              <div className="text-green-100 text-sm">Team {mockDebateData.currentTeam}</div>
-              <div className="mt-3 text-white text-3xl font-mono font-bold text-center py-2 bg-white/20 rounded">
-                {formatTime(mockDebateData.timeRemaining)}
-              </div>
-            </section>
-
+          <aside className="lg:col-span-3 space-y-4">
             {/* Announcements/Q&A */}
-            <section className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20" aria-label="Announcements and Q&A">
+            <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Announcements and Q&A">
               <div className="flex gap-2 mb-3">
                 <button
                   onClick={() => setAnnouncementTab('announcements')}
-                  className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                     announcementTab === 'announcements'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white/10 text-blue-300 hover:bg-white/20'
+                      ? 'bg-indigo-600 text-white shadow-md'
+                      : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
                   }`}
+                  title="View announcements"
                 >
                   📢 Announcements
                 </button>
                 <button
                   onClick={() => setAnnouncementTab('qa')}
-                  className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                     announcementTab === 'qa'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white/10 text-blue-300 hover:bg-white/20'
+                      ? 'bg-indigo-600 text-white shadow-md'
+                      : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
                   }`}
+                  title="View Q&A"
                 >
                   ❓ Q&A
                 </button>
               </div>
-              <div className="text-white text-sm space-y-2">
+              <div className="text-white text-sm space-y-2 max-h-64 overflow-y-auto">
                 {announcementTab === 'announcements' ? (
                   <>
-                    <div className="bg-white/10 rounded p-2">
-                      <div className="font-medium">Moderator</div>
-                      <div className="text-blue-300 text-xs">Next round starts in 2 minutes</div>
+                    <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/30">
+                      <div className="font-semibold text-xs text-blue-300">Moderator</div>
+                      <div className="text-slate-200 text-xs mt-1">Next round starts in 2 minutes</div>
                     </div>
-                    <div className="bg-white/10 rounded p-2">
-                      <div className="font-medium">Host</div>
-                      <div className="text-blue-300 text-xs">Please keep questions respectful</div>
+                    <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/30">
+                      <div className="font-semibold text-xs text-blue-300">Host</div>
+                      <div className="text-slate-200 text-xs mt-1">Please keep questions respectful</div>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="bg-white/10 rounded p-2">
-                      <div className="font-medium">User123</div>
-                      <div className="text-blue-300 text-xs">What about environmental impact?</div>
+                    <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/30">
+                      <div className="font-semibold text-xs text-purple-300">User123</div>
+                      <div className="text-slate-200 text-xs mt-1">What about environmental impact?</div>
                     </div>
-                    <div className="bg-white/10 rounded p-2">
-                      <div className="font-medium">Debater456</div>
-                      <div className="text-blue-300 text-xs">Can you clarify that point?</div>
+                    <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/30">
+                      <div className="font-semibold text-xs text-purple-300">Debater456</div>
+                      <div className="text-slate-200 text-xs mt-1">Can you clarify that point?</div>
                     </div>
                   </>
                 )}
@@ -317,150 +406,106 @@ export default function LiveDebate() {
             </section>
 
             {/* Debate Summary */}
-            <section className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20" aria-label="Debate summary">
-              <h3 className="text-white font-semibold mb-3 text-sm">Debate Summary</h3>
+            <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Debate summary">
+              <h3 className="text-white font-semibold mb-3 text-sm">📋 Debate Summary</h3>
               <div className="space-y-3 text-sm">
                 <div>
-                  <div className="text-blue-300 text-xs mb-1">Topic</div>
-                  <div className="text-white">{mockDebateData.topic}</div>
+                  <div className="text-blue-300 text-xs mb-1 font-semibold">Topic</div>
+                  <div className="text-white text-xs leading-relaxed">{mockDebateData.topic}</div>
                 </div>
                 <div>
-                  <div className="text-blue-300 text-xs mb-1">Format</div>
-                  <div className="text-white">{mockDebateData.format}</div>
+                  <div className="text-blue-300 text-xs mb-1 font-semibold">Format</div>
+                  <div className="text-white text-xs">{mockDebateData.format}</div>
                 </div>
                 <div>
-                  <div className="text-blue-300 text-xs mb-1">Schedule</div>
-                  <div className="space-y-1">
+                  <div className="text-blue-300 text-xs mb-1 font-semibold">Schedule</div>
+                  <div className="space-y-1 max-h-40 overflow-y-auto">
                     {mockDebateData.schedule.map((item, index) => (
-                      <div key={index} className="text-white text-xs bg-white/10 rounded p-2">
-                        <span className="font-medium">{item.time}</span> - {item.event}
+                      <div key={index} className="text-white text-xs bg-slate-700/40 rounded-lg p-2 border border-slate-600/30">
+                        <span className="font-semibold text-blue-300">{item.time}</span> • {item.event}
                       </div>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <div className="text-blue-300 text-xs mb-1">Speaking Order</div>
-                  <div className="space-y-1">
+                  <div className="text-blue-300 text-xs mb-1 font-semibold">Speaking Order</div>
+                  <div className="space-y-1 max-h-40 overflow-y-auto">
                     {mockDebateData.speakingOrder.map((speaker, index) => (
-                      <div key={index} className="text-white text-xs bg-white/10 rounded p-2">
-                        {index + 1}. {speaker.name} (Team {speaker.team}) - {speaker.role}
+                      <div key={index} className="text-white text-xs bg-slate-700/40 rounded-lg p-2 border border-slate-600/30">
+                        {index + 1}. {speaker.name} (Team {speaker.team}) • {speaker.role}
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
             </section>
-          </aside>
-        </div>
 
-        {/* Bottom Bar - Streaming & Chat */}
-        <div className="mt-4 grid lg:grid-cols-2 gap-4">
-          {/* Streaming Status */}
-          <section className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20" aria-label="Streaming status">
-            <h3 className="text-white font-semibold mb-3">Streaming Status</h3>
-            <div className="flex flex-wrap gap-2 mb-3">
-              <span className={`px-3 py-1 rounded text-sm ${
-                mockDebateData.streaming.youtube === 'Connected'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-600 text-gray-300'
-              }`}>
-                YouTube: {mockDebateData.streaming.youtube}
-              </span>
-              <span className={`px-3 py-1 rounded text-sm ${
-                mockDebateData.streaming.facebook === 'Connected'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-600 text-gray-300'
-              }`}>
-                Facebook: {mockDebateData.streaming.facebook}
-              </span>
-              <span className={`px-3 py-1 rounded text-sm ${
-                mockDebateData.streaming.twitch === 'Connected'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-600 text-gray-300'
-              }`}>
-                Twitch: {mockDebateData.streaming.twitch}
-              </span>
-              <span className={`px-3 py-1 rounded text-sm ${
-                mockDebateData.streaming.rtmp === 'Connected'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-600 text-gray-300'
-              }`}>
-                RTMP: {mockDebateData.streaming.rtmp}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className={`px-3 py-1 rounded text-sm ${
-                mockDebateData.recording
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-600 text-gray-300'
-              }`}>
-                {mockDebateData.recording && <span className="mr-1">🔴</span>}
-                Recording: {mockDebateData.recording ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-          </section>
-
-          {/* Live Chat/Q&A */}
-          <section className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20" aria-label="Live chat and Q&A">
-            <div className="flex gap-2 mb-3">
-              <button
-                onClick={() => setActiveTab('chat')}
-                className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
-                  activeTab === 'chat'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white/10 text-blue-300 hover:bg-white/20'
-                }`}
-              >
-                💬 Chat
-              </button>
-              <button
-                onClick={() => setActiveTab('qa')}
-                className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
-                  activeTab === 'qa'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white/10 text-blue-300 hover:bg-white/20'
-                }`}
-              >
-                ❓ Questions
-              </button>
-            </div>
-            <div className="h-32 bg-white/5 rounded p-2 mb-2 overflow-y-auto">
-              <div className="space-y-2 text-sm">
-                {activeTab === 'chat' ? (
-                  <>
-                    <div className="text-white">
-                      <span className="text-blue-400 font-medium">User1:</span> Great opening statement!
-                    </div>
-                    <div className="text-white">
-                      <span className="text-blue-400 font-medium">User2:</span> Looking forward to the rebuttals
-                    </div>
-                    <div className="text-white">
-                      <span className="text-blue-400 font-medium">User3:</span> Excellent points from both teams
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-white">
-                      <span className="text-purple-400 font-medium">Q:</span> How do you address privacy concerns?
-                    </div>
-                    <div className="text-white">
-                      <span className="text-purple-400 font-medium">Q:</span> What about rural communities?
-                    </div>
-                  </>
-                )}
+            {/* Live Chat/Q&A */}
+            <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Live chat and Q&A">
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() => setActiveTab('chat')}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                    activeTab === 'chat'
+                      ? 'bg-indigo-600 text-white shadow-md'
+                      : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
+                  }`}
+                  title="View chat messages"
+                >
+                  💬 Chat
+                </button>
+                <button
+                  onClick={() => setActiveTab('qa')}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                    activeTab === 'qa'
+                      ? 'bg-indigo-600 text-white shadow-md'
+                      : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
+                  }`}
+                  title="View questions"
+                >
+                  ❓ Questions
+                </button>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder={activeTab === 'chat' ? 'Type a message...' : 'Ask a question...'}
-                className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm transition-colors">
-                Send
-              </button>
-            </div>
-          </section>
+              <div className="h-32 bg-slate-900/40 rounded-lg p-3 mb-3 overflow-y-auto border border-slate-700/30">
+                <div className="space-y-2 text-sm">
+                  {activeTab === 'chat' ? (
+                    <>
+                      <div className="text-white text-xs">
+                        <span className="text-blue-400 font-semibold">User1:</span> Great opening statement!
+                      </div>
+                      <div className="text-white text-xs">
+                        <span className="text-blue-400 font-semibold">User2:</span> Looking forward to the rebuttals
+                      </div>
+                      <div className="text-white text-xs">
+                        <span className="text-blue-400 font-semibold">User3:</span> Excellent points from both teams
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-white text-xs">
+                        <span className="text-purple-400 font-semibold">Q:</span> How do you address privacy concerns?
+                      </div>
+                      <div className="text-white text-xs">
+                        <span className="text-purple-400 font-semibold">Q:</span> What about rural communities?
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder={activeTab === 'chat' ? 'Type a message...' : 'Ask a question...'}
+                  className="flex-1 px-3 py-2 bg-slate-900/40 border border-slate-700/50 rounded-lg text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+                <Tooltip text={activeTab === 'chat' ? 'Send message' : 'Submit question'}>
+                  <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                    Send
+                  </button>
+                </Tooltip>
+              </div>
+            </section>
+          </aside>
         </div>
       </div>
 
