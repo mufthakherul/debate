@@ -12,7 +12,10 @@ The Virtual Debating Club platform enables debate enthusiasts to participate in 
 - **User Authentication**: Secure JWT-based authentication with role-based access control
 - **User Roles**: Support for USER, MODERATOR, and ADMIN roles
 - **Debate Management**: Create, manage, and participate in debates with multiple status states
-- **Modern UI**: Responsive React interface with Tailwind CSS
+- **Live Streaming**: Stream debates to multiple platforms simultaneously (YouTube, Facebook, Twitch, Custom RTMP)
+- **Engagement Metrics**: Real-time viewer counts, comments, and likes tracking
+- **Dark Mode**: Toggle between light and dark themes with persistent preference
+- **Modern UI**: Responsive React interface with Tailwind CSS and smooth animations
 - **RESTful API**: Clean, well-documented API endpoints
 - **Database Integration**: PostgreSQL with Prisma ORM for type-safe database access
 - **Docker Support**: Containerized deployment for easy setup and scalability
@@ -59,6 +62,10 @@ The platform features a redesigned live debate interface at `/live-debate` with 
 **Key Features:**
 - **Centered Current Speaker**: Prominently highlighted with large timer display for immediate focus
 - **Strategic Layout**: Timekeeper controls positioned directly below current speaker for quick access
+- **Live Streaming Controls**: Integrated controls for multi-platform streaming (YouTube, Facebook, Twitch, RTMP)
+- **Real-time Engagement Stats**: Live viewer counts, comments, and likes displayed prominently
+- **Interactive Q&A Modal**: Full-screen modal for audience questions with upvoting and filtering
+- **Dark Mode Support**: Toggle between light and dark themes with smooth transitions
 - **Collapsible Audience Section**: Left rail combines audience count, actions, and view requests in a collapsible panel
 - **Horizontal Team & Judges Layout**: Teams displayed side-by-side with judges panel below for better space utilization
 - **Compact Streaming Status**: Streamlined display showing all platforms and recording status in one line
@@ -76,6 +83,7 @@ The platform features a redesigned live debate interface at `/live-debate` with 
   - Subtle gradients and shadows for depth
   - Better typography hierarchy
   - Refined color palette with better contrast
+  - Smooth animations for modals and transitions
 
 **Access:**
 1. Navigate to `http://localhost:5173/live-debate` (currently uses mock data)
@@ -167,6 +175,42 @@ The platform features a redesigned live debate interface at `/live-debate` with 
 
 - [Deployment Guide](ops/docs/DEPLOYMENT.md) - Detailed deployment instructions
 - [Architecture Overview](ops/docs/ARCHITECTURE.md) - System design and technology stack
+- [Streaming Guide](STREAMING.md) - Comprehensive guide to live streaming features
+
+## 🎥 Live Streaming
+
+The platform supports streaming debates to multiple platforms simultaneously. Key features include:
+
+### Supported Platforms
+- **YouTube Live** - Stream to YouTube with real-time engagement
+- **Facebook Live** - Broadcast to Facebook with comments and reactions
+- **Twitch** - Stream to Twitch with interactive chat
+- **Custom RTMP** - Connect to any RTMP-compatible service
+
+### Quick Start
+1. Navigate to a live debate at `/live-debate`
+2. Click "Start Stream" button (requires Moderator/Admin role)
+3. Select platforms and enter stream keys
+4. Monitor live engagement statistics in real-time
+
+### Key Features
+- ✅ Multi-platform simultaneous streaming
+- ✅ Real-time viewer count and engagement metrics
+- ✅ Platform-specific status indicators
+- ✅ Secure stream key validation
+- ✅ Error handling and automatic recovery
+- ✅ Historical statistics tracking
+
+For detailed information, see the [Streaming Guide](STREAMING.md).
+
+### API Endpoints
+```
+GET  /api/streaming/status/:debateId  - Get streaming status
+GET  /api/streaming/stats/:debateId   - Get engagement metrics
+POST /api/streaming/start             - Start streaming
+POST /api/streaming/stop              - Stop streaming
+POST /api/streaming/stats             - Update statistics
+```
 
 ## 🛠️ Development
 
@@ -217,6 +261,20 @@ npm test
 ### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
+
+### Debates
+- `GET /api/debates` - List debates with filtering
+- `GET /api/debates/:id` - Get debate details
+- `POST /api/debates` - Create new debate (Moderator/Admin)
+- `PUT /api/debates/:id` - Update debate (Moderator/Admin)
+- `DELETE /api/debates/:id` - Delete debate (Moderator/Admin)
+
+### Streaming
+- `GET /api/streaming/status/:debateId` - Get streaming status
+- `GET /api/streaming/stats/:debateId` - Get engagement statistics
+- `POST /api/streaming/start` - Start multi-platform stream (Moderator/Admin)
+- `POST /api/streaming/stop` - Stop stream (Moderator/Admin)
+- `POST /api/streaming/stats` - Update statistics (Internal)
 
 ### Health Check
 - `GET /api/health` - Check API status
