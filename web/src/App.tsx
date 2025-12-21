@@ -8,6 +8,7 @@ import DebatesList from './pages/DebatesList'
 import DebateDetail from './pages/DebateDetail'
 import Notifications from './pages/Notifications'
 import Topics from './pages/Topics'
+import LiveDebate from './pages/LiveDebate'
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/live-debate" element={<LiveDebate />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>
