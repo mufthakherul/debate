@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { StreamingControlPanel, StreamPlatform } from '../components/StreamingControlPanel'
+import { StreamingStats } from '../components/StreamingStats'
+import { DarkModeToggle } from '../components/DarkModeToggle'
+import { QAModal } from '../components/QAModal'
 
 // Tooltip component for accessibility
 const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => (
@@ -72,9 +76,41 @@ export default function LiveDebate() {
   const [announcementTab, setAnnouncementTab] = useState<'announcements' | 'qa'>('announcements')
   const [showLeaveModal, setShowLeaveModal] = useState(false)
   const [audienceCollapsed, setAudienceCollapsed] = useState(false)
+  const [showQAModal, setShowQAModal] = useState(false)
+  const [streamingPlatforms, setStreamingPlatforms] = useState<StreamPlatform[]>([
+    { platform: 'YOUTUBE', isActive: true, status: 'LIVE' },
+    { platform: 'TWITCH', isActive: true, status: 'LIVE' },
+    { platform: 'FACEBOOK', isActive: false, status: 'IDLE' },
+    { platform: 'CUSTOM_RTMP', isActive: false, status: 'IDLE' },
+  ])
+  const [isStreaming, setIsStreaming] = useState(true)
 
   const handleLeave = () => {
     navigate('/debates')
+  }
+
+  const handleStartStream = async (platforms: StreamPlatform[]) => {
+    console.log('Starting stream on platforms:', platforms)
+    // Mock implementation - in real app, call API
+    setStreamingPlatforms(platforms)
+    setIsStreaming(true)
+  }
+
+  const handleStopStream = async (platforms?: string[]) => {
+    console.log('Stopping stream on platforms:', platforms || 'all')
+    // Mock implementation
+    if (platforms) {
+      setStreamingPlatforms(prev =>
+        prev.map(p =>
+          platforms.includes(p.platform) ? { ...p, isActive: false, status: 'STOPPED' } : p
+        )
+      )
+    } else {
+      setStreamingPlatforms(prev =>
+        prev.map(p => ({ ...p, isActive: false, status: 'STOPPED' }))
+      )
+      setIsStreaming(false)
+    }
   }
 
   const formatTime = (seconds: number) => {
@@ -84,9 +120,9 @@ export default function LiveDebate() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
       {/* Header - More compact and accessible */}
-      <header className="bg-slate-900/95 backdrop-blur-lg border-b border-slate-700/50 sticky top-0 z-50 shadow-lg">
+      <header className="bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-lg border-b border-slate-700/50 dark:border-slate-800/50 sticky top-0 z-50 shadow-lg">
         <div className="container mx-auto px-3 sm:px-4 lg:px-6">
           <div className="flex items-center justify-between min-h-[64px] gap-3 py-2 flex-wrap">
             <div className="flex items-center gap-3 flex-shrink-0">
@@ -112,6 +148,7 @@ export default function LiveDebate() {
               <span className="hidden md:inline-flex px-2 py-1 bg-orange-700 text-white text-xs rounded" title="Timekeeper">
                 Time: {mockDebateData.roles.timekeeper}
               </span>
+              <DarkModeToggle />
               <Tooltip text="Leave debate session">
                 <button
                   onClick={() => setShowLeaveModal(true)}
@@ -227,6 +264,24 @@ export default function LiveDebate() {
                 </Tooltip>
               </div>
             </section>
+
+            {/* Streaming Controls & Stats */}
+            <div className="grid sm:grid-cols-2 gap-4">
+              <section className="bg-slate-800/60 dark:bg-slate-900/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 dark:border-slate-800/50 shadow-xl" aria-label="Streaming controls">
+                <h3 className="text-white font-semibold mb-3 text-sm">📡 Streaming Control</h3>
+                <StreamingControlPanel
+                  debateId="mock-debate-id"
+                  onStartStream={handleStartStream}
+                  onStopStream={handleStopStream}
+                  platforms={streamingPlatforms}
+                  isStreaming={isStreaming}
+                />
+              </section>
+
+              <section className="bg-slate-800/60 dark:bg-slate-900/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 dark:border-slate-800/50 shadow-xl" aria-label="Streaming statistics">
+                <StreamingStats debateId="mock-debate-id" refreshInterval={5000} />
+              </section>
+            </div>
 
             {/* Team Panels and Judges - Horizontal Layout */}
             <div className="grid sm:grid-cols-2 gap-4">
@@ -405,6 +460,15 @@ export default function LiveDebate() {
               </div>
             </section>
 
+            {/* Q&A Modal Button */}
+            <button
+              onClick={() => setShowQAModal(true)}
+              className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 hover:from-purple-700 hover:to-indigo-700 dark:hover:from-purple-600 dark:hover:to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center justify-center gap-2"
+            >
+              <span className="text-xl">❓</span>
+              <span>Open Audience Q&A</span>
+            </button>
+
             {/* Debate Summary */}
             <section className="bg-slate-800/60 backdrop-blur-md rounded-xl p-4 border border-slate-700/50 shadow-xl" aria-label="Debate summary">
               <h3 className="text-white font-semibold mb-3 text-sm">📋 Debate Summary</h3>
@@ -508,6 +572,13 @@ export default function LiveDebate() {
           </aside>
         </div>
       </div>
+
+      {/* Q&A Modal */}
+      <QAModal
+        isOpen={showQAModal}
+        onClose={() => setShowQAModal(false)}
+        debateId="mock-debate-id"
+      />
 
       {/* Leave Confirmation Modal */}
       <ConfirmModal
