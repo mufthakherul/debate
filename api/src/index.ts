@@ -1,59 +1,74 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import dotenv from 'dotenv';
+import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
+import { config } from './config';
+import { errorHandler } from './middleware/errorHandler';
+import { logger } from './utils/logger';
 import authRoutes from './routes/auth';
-
-dotenv.config();
+import debatesRoutes from './routes/debates';
+import topicsRoutes from './routes/topics';
+import scoresRoutes from './routes/scores';
+import notificationsRoutes from './routes/notifications';
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-    methods: ['GET', 'POST']
+    origin: config.cors.allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true,
   }
 });
-
-const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173'
+  origin: config.cors.allowedOrigins,
+  credentials: true,
 }));
 app.use(express.json());
+app.use(cookieParser());
+app.use(morgan('combined'));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/debates', debatesRoutes);
+app.use('/api/topics', topicsRoutes);
+app.use('/api/scores', scoresRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Virtual Debating Club API is running' });
 });
 
+// Error handler (must be last)
+app.use(errorHandler);
+
 // Socket.io placeholder for real-time debate features
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+  logger.info(`Client connected: ${socket.id}`);
   
   socket.on('join-debate', (debateId: string) => {
     socket.join(`debate-${debateId}`);
-    console.log(`Socket ${socket.id} joined debate ${debateId}`);
+    logger.debug(`Socket ${socket.id} joined debate ${debateId}`);
   });
   
   socket.on('leave-debate', (debateId: string) => {
     socket.leave(`debate-${debateId}`);
-    console.log(`Socket ${socket.id} left debate ${debateId}`);
+    logger.debug(`Socket ${socket.id} left debate ${debateId}`);
   });
   
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    logger.info(`Client disconnected: ${socket.id}`);
   });
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+httpServer.listen(config.port, () => {
+  logger.info(`Server running on port ${config.port}`);
 });
 
 export { io };
