@@ -52,20 +52,32 @@ The project follows a monorepo structure:
 - Docker and Docker Compose ([Download](https://www.docker.com/))
 - PostgreSQL 16+ (optional for local development without Docker)
 
-### New Feature: Live Debate UI
+### Live Debate UI (Redesigned)
 
-The platform now includes a comprehensive live debate interface accessible at `/live-debate`. This page features:
+The platform features a redesigned live debate interface at `/live-debate` with improved visual hierarchy and user experience:
 
-- **Header**: Real-time debate status, current speaker, timer, and role badges (Host, Moderator, Timekeeper)
-- **Main Stage**: Side-by-side team panels with speaker highlights, judges panel, and timekeeper controls
-- **Right Rail**: Current speaker card, timer widget, and announcements/Q&A toggle
-- **Left Rail**: Audience actions (raise hand, request to speak), view requests list, and audience count
-- **Bottom Bar**: Streaming status (YouTube/Facebook/Twitch/RTMP), recording indicator, and live chat/Q&A tabs
-- **Debate Summary**: Topic, format, schedule, and speaking order
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Accessibility**: Semantic landmarks, clear focus states, and sufficient contrast
+**Key Features:**
+- **Centered Current Speaker**: Prominently highlighted with large timer display for immediate focus
+- **Strategic Layout**: Timekeeper controls positioned directly below current speaker for quick access
+- **Collapsible Audience Section**: Left rail combines audience count, actions, and view requests in a collapsible panel
+- **Horizontal Team & Judges Layout**: Teams displayed side-by-side with judges panel below for better space utilization
+- **Compact Streaming Status**: Streamlined display showing all platforms and recording status in one line
+- **Enhanced Accessibility**: 
+  - Hover tooltips on all interactive controls
+  - Improved color contrast (WCAG AA compliant)
+  - Semantic HTML landmarks and ARIA labels
+  - Clear focus states for keyboard navigation
+- **Fully Responsive**: 
+  - Desktop (>1024px): Full 3-column layout
+  - Tablet (640px-1024px): Adaptive 2-column layout
+  - Mobile (<640px): Stacked single-column layout
+- **Visual Improvements**:
+  - Consistent padding and spacing
+  - Subtle gradients and shadows for depth
+  - Better typography hierarchy
+  - Refined color palette with better contrast
 
-To view the live debate page:
+**Access:**
 1. Navigate to `http://localhost:5173/live-debate` (currently uses mock data)
 2. The page is accessible without authentication for development purposes
 
@@ -217,6 +229,46 @@ npm test
 - Helmet.js security headers
 - Rate limiting on API endpoints
 
+## 🚀 Deployment to Vercel
+
+### Prerequisites
+- A [Vercel account](https://vercel.com/signup)
+- GitHub repository connected to Vercel
+
+### Deploy Steps
+
+1. **Connect your repository to Vercel**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Click "Add New Project"
+   - Import your GitHub repository
+
+2. **Configure the project**
+   - Framework Preset: **Vite**
+   - Root Directory: **web**
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+
+3. **Environment Variables**
+   Set the following environment variables in Vercel project settings:
+   ```
+   VITE_API_URL=https://your-api-url.com
+   ```
+
+4. **Deploy**
+   - Click "Deploy"
+   - Vercel will automatically build and deploy your application
+   - Your site will be available at `https://your-project.vercel.app`
+
+### Automatic Deployments
+- **Production**: Automatically deploys from the `main` branch
+- **Preview**: Automatically creates preview deployments for pull requests
+
+### Custom Domain (Optional)
+1. Go to your project settings in Vercel
+2. Navigate to "Domains"
+3. Add your custom domain
+4. Follow DNS configuration instructions
+
 ## 🗺️ Roadmap
 
 ### Phase 1: Foundation (Current)
@@ -228,7 +280,7 @@ npm test
 
 ### Phase 2: Core Features (Q1 2025)
 - [ ] Debate creation and management UI
-- [x] Live debate room functionality (UI implemented at `/live-debate`)
+- [x] Live debate room functionality (Redesigned UI at `/live-debate`)
 - [ ] Real-time messaging and notifications
 - [ ] User profile management
 - [ ] Debate history and recordings
