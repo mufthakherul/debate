@@ -52,6 +52,23 @@ The project follows a monorepo structure:
 - Docker and Docker Compose ([Download](https://www.docker.com/))
 - PostgreSQL 16+ (optional for local development without Docker)
 
+### New Feature: Live Debate UI
+
+The platform now includes a comprehensive live debate interface accessible at `/live-debate`. This page features:
+
+- **Header**: Real-time debate status, current speaker, timer, and role badges (Host, Moderator, Timekeeper)
+- **Main Stage**: Side-by-side team panels with speaker highlights, judges panel, and timekeeper controls
+- **Right Rail**: Current speaker card, timer widget, and announcements/Q&A toggle
+- **Left Rail**: Audience actions (raise hand, request to speak), view requests list, and audience count
+- **Bottom Bar**: Streaming status (YouTube/Facebook/Twitch/RTMP), recording indicator, and live chat/Q&A tabs
+- **Debate Summary**: Topic, format, schedule, and speaking order
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Accessibility**: Semantic landmarks, clear focus states, and sufficient contrast
+
+To view the live debate page:
+1. Navigate to `http://localhost:5173/live-debate` (currently uses mock data)
+2. The page is accessible without authentication for development purposes
+
 ### Quick Start with Docker
 
 1. **Clone the repository**
@@ -211,7 +228,7 @@ npm test
 
 ### Phase 2: Core Features (Q1 2025)
 - [ ] Debate creation and management UI
-- [ ] Live debate room functionality
+- [x] Live debate room functionality (UI implemented at `/live-debate`)
 - [ ] Real-time messaging and notifications
 - [ ] User profile management
 - [ ] Debate history and recordings
