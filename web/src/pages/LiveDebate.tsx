@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ConfirmModal } from '../components/ConfirmModal'
-import { StreamingControlPanel } from '../components/StreamingControlPanel'
+import { StreamingControlPanel, StreamPlatform } from '../components/StreamingControlPanel'
 import { StreamingStats } from '../components/StreamingStats'
 import { DarkModeToggle } from '../components/DarkModeToggle'
 import { QAModal } from '../components/QAModal'
@@ -77,7 +77,7 @@ export default function LiveDebate() {
   const [showLeaveModal, setShowLeaveModal] = useState(false)
   const [audienceCollapsed, setAudienceCollapsed] = useState(false)
   const [showQAModal, setShowQAModal] = useState(false)
-  const [streamingPlatforms, setStreamingPlatforms] = useState<any[]>([
+  const [streamingPlatforms, setStreamingPlatforms] = useState<StreamPlatform[]>([
     { platform: 'YOUTUBE', isActive: true, status: 'LIVE' },
     { platform: 'TWITCH', isActive: true, status: 'LIVE' },
     { platform: 'FACEBOOK', isActive: false, status: 'IDLE' },
@@ -89,7 +89,7 @@ export default function LiveDebate() {
     navigate('/debates')
   }
 
-  const handleStartStream = async (platforms: any[]) => {
+  const handleStartStream = async (platforms: StreamPlatform[]) => {
     console.log('Starting stream on platforms:', platforms)
     // Mock implementation - in real app, call API
     setStreamingPlatforms(platforms)

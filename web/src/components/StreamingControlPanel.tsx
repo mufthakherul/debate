@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-interface StreamPlatform {
+export interface StreamPlatform {
   platform: 'YOUTUBE' | 'FACEBOOK' | 'TWITCH' | 'CUSTOM_RTMP'
   streamKey?: string
   streamUrl?: string
@@ -8,7 +8,7 @@ interface StreamPlatform {
   status: string
 }
 
-interface StreamingControlPanelProps {
+export interface StreamingControlPanelProps {
   debateId: string
   onStartStream: (platforms: StreamPlatform[]) => Promise<void>
   onStopStream: (platforms?: string[]) => Promise<void>
@@ -39,14 +39,15 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
 
   const handleStartStream = async () => {
     if (selectedPlatforms.length === 0) {
-      alert('Please select at least one platform')
+      // TODO: Replace with toast notification system
+      console.warn('Please select at least one platform')
       return
     }
 
     setIsStarting(true)
     try {
       const platformConfigs: StreamPlatform[] = selectedPlatforms.map(p => ({
-        platform: p as any,
+        platform: p as StreamPlatform['platform'],
         streamKey: streamKeys[p] || undefined,
         streamUrl: p === 'CUSTOM_RTMP' ? rtmpUrl : undefined,
         isActive: true,
@@ -57,7 +58,7 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
       setShowConfig(false)
     } catch (error) {
       console.error('Failed to start stream:', error)
-      alert('Failed to start stream. Please check your configuration.')
+      // TODO: Replace with toast notification system
     } finally {
       setIsStarting(false)
     }
@@ -69,7 +70,7 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
       await onStopStream()
     } catch (error) {
       console.error('Failed to stop stream:', error)
-      alert('Failed to stop stream.')
+      // TODO: Replace with toast notification system
     } finally {
       setIsStopping(false)
     }
