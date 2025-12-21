@@ -61,6 +61,22 @@ enum DifficultyLevel {
   EXPERT
 }
 
+enum StreamPlatformType {
+  YOUTUBE
+  FACEBOOK
+  TWITCH
+  CUSTOM_RTMP
+}
+
+enum StreamStatus {
+  IDLE
+  STARTING
+  LIVE
+  STOPPING
+  STOPPED
+  ERROR
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -125,6 +141,7 @@ model Debate {
   participants DebateParticipant[]
   rounds       DebateRound[]
   scores       Score[]
+  streamSession StreamSession?
   
   @@map("debates")
 }
@@ -209,4 +226,53 @@ model Notification {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("notifications")
+}
+
+model StreamSession {
+  id           String       @id @default(uuid())
+  status       StreamStatus @default(IDLE)
+  startedAt    DateTime?
+  stoppedAt    DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  
+  debateId     String       @unique
+  debate       Debate       @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  
+  platforms    StreamPlatform[]
+  stats        StreamStats[]
+  
+  @@map("stream_sessions")
+}
+
+model StreamPlatform {
+  id             String             @id @default(uuid())
+  platform       StreamPlatformType
+  streamKey      String?
+  streamUrl      String?
+  isActive       Boolean            @default(false)
+  status         StreamStatus       @default(IDLE)
+  lastError      String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  
+  sessionId      String
+  session        StreamSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@unique([sessionId, platform])
+  @@map("stream_platforms")
+}
+
+model StreamStats {
+  id             String        @id @default(uuid())
+  viewerCount    Int           @default(0)
+  peakViewers    Int           @default(0)
+  totalComments  Int           @default(0)
+  totalLikes     Int           @default(0)
+  recordedAt     DateTime      @default(now())
+  
+  sessionId      String
+  session        StreamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@map("stream_stats")
 }
