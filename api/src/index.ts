@@ -13,6 +13,7 @@ import debatesRoutes from './routes/debates';
 import topicsRoutes from './routes/topics';
 import scoresRoutes from './routes/scores';
 import notificationsRoutes from './routes/notifications';
+import streamingRoutes from './routes/streaming';
 
 const app = express();
 const httpServer = createServer(app);
@@ -40,6 +41,7 @@ app.use('/api/debates', debatesRoutes);
 app.use('/api/topics', topicsRoutes);
 app.use('/api/scores', scoresRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/streaming', streamingRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Virtual Debating Club API is running' });
