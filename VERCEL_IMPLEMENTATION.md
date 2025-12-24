@@ -88,7 +88,7 @@ The repository is now structured as a monorepo that can be deployed to Vercel wi
 This configuration:
 - Builds API as serverless functions at `/api/*`
 - Builds Web as static site at `/*`
-- Routes API requests to serverless function
+- Routes API requests to serverless function (note: `/api/api/index.ts` is the Vercel path format where the first `api/` is the workspace directory and the second `api/` is the serverless function directory)
 - Routes all other requests to web app with SPA support
 
 #### API Package Changes (`api/package.json`)

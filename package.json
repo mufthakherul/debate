@@ -9,12 +9,11 @@
   ],
   "scripts": {
     "install:all": "npm install && cd api && npm install && cd ../web && npm install",
-    "build": "npm run build:api && npm run build:web",
     "build:api": "cd api && npm run build && npx prisma generate",
     "build:web": "cd web && npm run build",
+    "build": "npm run build:api && npm run build:web",
     "dev:api": "cd api && npm run dev",
-    "dev:web": "cd web && npm run dev",
-    "vercel-build": "npm run build:api && npm run build:web"
+    "dev:web": "cd web && npm run dev"
   },
   "keywords": [
     "debate",
