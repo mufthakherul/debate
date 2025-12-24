@@ -13,7 +13,9 @@
     "lint": "tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && tsc"
   },
   "dependencies": {
     "@prisma/client": "^5.7.0",
@@ -27,6 +29,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
+    "prisma": "^5.7.0",
     "socket.io": "^4.6.1",
     "uuid": "^13.0.0"
   },
@@ -43,7 +46,6 @@
     "@types/uuid": "^11.0.0",
     "jest": "^30.2.0",
     "nodemon": "^3.0.2",
-    "prisma": "^5.7.0",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",

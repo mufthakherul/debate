@@ -289,43 +289,18 @@ npm test
 
 ## 🚀 Deployment to Vercel
 
-### Prerequisites
-- A [Vercel account](https://vercel.com/signup)
-- GitHub repository connected to Vercel
+This project can be deployed to Vercel with both the API and Web app in a single project.
 
-### Deploy Steps
+**📖 [Read the Complete Vercel Deployment Guide](VERCEL_DEPLOYMENT.md)**
+
+### Quick Overview
 
 1. **Connect your repository to Vercel**
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
-   - Click "Add New Project"
-   - Import your GitHub repository
+2. **Set up environment variables** (DATABASE_URL, JWT_SECRET, etc.)
+3. **Deploy** - Vercel will automatically build and deploy both API and Web
+4. **Run database migrations** using Vercel CLI or locally
 
-2. **Configure the project**
-   - Framework Preset: **Vite**
-   - Root Directory: **web**
-   - Build Command: `npm run build`
-   - Output Directory: `dist`
-
-3. **Environment Variables**
-   Set the following environment variables in Vercel project settings:
-   ```
-   VITE_API_URL=https://your-api-url.com
-   ```
-
-4. **Deploy**
-   - Click "Deploy"
-   - Vercel will automatically build and deploy your application
-   - Your site will be available at `https://your-project.vercel.app`
-
-### Automatic Deployments
-- **Production**: Automatically deploys from the `main` branch
-- **Preview**: Automatically creates preview deployments for pull requests
-
-### Custom Domain (Optional)
-1. Go to your project settings in Vercel
-2. Navigate to "Domains"
-3. Add your custom domain
-4. Follow DNS configuration instructions
+For detailed step-by-step instructions, troubleshooting, and best practices, see the [Vercel Deployment Guide](VERCEL_DEPLOYMENT.md).
 
 ## 🗺️ Roadmap
 

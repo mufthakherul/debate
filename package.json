@@ -1,0 +1,26 @@
+{
+  "name": "debate-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Virtual Debating Club Platform - Monorepo",
+  "workspaces": [
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd api && npm install && cd ../web && npm install",
+    "build": "npm run build:api && npm run build:web",
+    "build:api": "cd api && npm run build && npx prisma generate",
+    "build:web": "cd web && npm run build",
+    "dev:api": "cd api && npm run dev",
+    "dev:web": "cd web && npm run dev",
+    "vercel-build": "npm run build:api && npm run build:web"
+  },
+  "keywords": [
+    "debate",
+    "platform",
+    "monorepo"
+  ],
+  "author": "Virtual Debating Club",
+  "license": "MIT"
+}

@@ -1,0 +1,51 @@
+# Dependencies
+node_modules
+api/node_modules
+web/node_modules
+
+# Environment files
+.env
+.env.local
+.env.*.local
+api/.env
+web/.env
+
+# Build artifacts
+api/dist
+web/dist
+
+# Tests
+api/__tests__
+api/src/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Docker
+docker-compose.yml
+api/Dockerfile
+web/Dockerfile
+
+# Development files
+*.log
+.DS_Store
+.vscode
+.idea
+
+# Documentation (excluding root README)
+ops/
+IMPLEMENTATION_SUMMARY.md
+PR_SUMMARY.md
+STREAMING.md
+
+# Git
+.git
+.gitignore
+.github
+
+# Lock files (Vercel will use package-lock.json if present)
+pnpm-lock.yaml
+
+# Prisma migrations (keep schema only)
+api/prisma/migrations
