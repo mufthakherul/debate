@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
+import swaggerUi from 'swagger-ui-express';
 import { config } from './config';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
@@ -14,6 +15,8 @@ import topicsRoutes from './routes/topics';
 import scoresRoutes from './routes/scores';
 import notificationsRoutes from './routes/notifications';
 import streamingRoutes from './routes/streaming';
+import { prisma } from './lib/prisma';
+import { specs } from './utils/swagger';
 
 const app = express();
 const httpServer = createServer(app);
@@ -42,6 +45,7 @@ app.use('/api/topics', topicsRoutes);
 app.use('/api/scores', scoresRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/streaming', streamingRoutes);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Virtual Debating Club API is running' });
@@ -71,6 +75,25 @@ io.on('connection', (socket) => {
 
 httpServer.listen(config.port, () => {
   logger.info(`Server running on port ${config.port}`);
+});
+
+const gracefulShutdown = async (signal: string) => {
+  logger.info(`Received ${signal}, shutting down gracefully`);
+
+  io.close();
+  httpServer.close(async () => {
+    await prisma.$disconnect();
+    logger.info('HTTP server closed and Prisma disconnected');
+    process.exit(0);
+  });
+};
+
+process.on('SIGINT', () => {
+  void gracefulShutdown('SIGINT');
+});
+
+process.on('SIGTERM', () => {
+  void gracefulShutdown('SIGTERM');
 });
 
 export { io };

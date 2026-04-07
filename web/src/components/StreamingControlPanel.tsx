@@ -17,7 +17,7 @@ export interface StreamingControlPanelProps {
 }
 
 export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
-  debateId: _debateId,
+  debateId,
   onStartStream,
   onStopStream,
   platforms,
@@ -123,7 +123,10 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
 
       {/* Configuration Panel */}
       {showConfig && !isStreaming && (
-        <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg p-4 space-y-4 animate-slide-in">
+        <div
+          className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg p-4 space-y-4 animate-slide-in"
+          data-debate-id={debateId}
+        >
           <h4 className="font-semibold text-slate-900 dark:text-white">
             Select Streaming Platforms
           </h4>
