@@ -4,6 +4,7 @@ import { body, param } from 'express-validator';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { AppError } from '../middleware/errorHandler';
+import { asyncHandler } from '../utils/asyncHandler';
 import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
@@ -18,7 +19,7 @@ router.get(
     param('debateId').isString(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { debateId } = req.params;
       
@@ -59,7 +60,7 @@ router.get(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 /**
@@ -72,7 +73,7 @@ router.get(
     param('debateId').isString(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { debateId } = req.params;
       
@@ -106,7 +107,7 @@ router.get(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 /**
@@ -124,7 +125,7 @@ router.post(
     body('platforms.*.streamUrl').optional().isString(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { debateId, platforms } = req.body;
       
@@ -249,7 +250,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 /**
@@ -264,7 +265,7 @@ router.post(
     body('platforms').optional().isArray(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { debateId, platforms } = req.body;
       
@@ -340,7 +341,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 /**

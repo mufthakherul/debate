@@ -13,12 +13,12 @@ Completed now:
 Current verification:
 - ✅ Frontend lint/build passing.
 - ✅ Backend lint/build passing.
-- ⚠️ Backend tests are blocked by missing local PostgreSQL runtime (localhost:5432 unavailable).
+- ✅ Backend tests are passing against the local PostgreSQL runtime.
 
 Revised immediate priority:
-1. Start PostgreSQL service for test execution.
-2. Run prisma db push or migrations.
-3. Re-run pnpm test and capture coverage baseline.
+1. Keep the PostgreSQL-backed test flow available for future regression runs.
+2. Extend coverage beyond the current auth baseline.
+3. Address the remaining frontend TypeScript version warning when toolchain upgrades are planned.
 
 ---
 

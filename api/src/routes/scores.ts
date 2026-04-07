@@ -4,6 +4,7 @@ import { body, param } from 'express-validator';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { AppError } from '../middleware/errorHandler';
+import { asyncHandler } from '../utils/asyncHandler';
 import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
@@ -23,7 +24,7 @@ router.post(
     body('isPublic').optional().isBoolean(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { debateId, participantId, category, score, maxScore, weight, feedback, isPublic } = req.body;
       const judgeId = req.user!.userId;
@@ -109,7 +110,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Get aggregated scores for a debate
@@ -120,7 +121,7 @@ router.get(
     param('debateId').isString(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { debateId } = req.params;
       const userId = req.user!.userId;
@@ -209,7 +210,7 @@ router.get(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 export default router;

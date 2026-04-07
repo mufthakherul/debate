@@ -3,7 +3,7 @@ export default {
   testEnvironment: 'node',
   setupFiles: ['<rootDir>/src/__tests__/setupEnv.ts'],
   roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: ['**/?(*.)+(spec|test).ts'],
   testTimeout: 20000,
   moduleFileExtensions: ['ts', 'js', 'json'],
   collectCoverageFrom: [

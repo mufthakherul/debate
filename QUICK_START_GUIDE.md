@@ -17,7 +17,8 @@
 - ✅ Added Prisma indexes for high-traffic query fields.
 
 ### Current blocker
-- ⛔ API tests need PostgreSQL running at localhost:5432. Docker CLI is not available in the current environment, so tests cannot fully pass yet.
+- ℹ️ API tests are now passing with PostgreSQL available locally.
+- ℹ️ Frontend lint still reports the known TypeScript version support warning from the ESLint parser.
 
 ---
 
@@ -27,12 +28,12 @@
 Overall Score: 6.5/10
 
 Architecture    ████████░░ 8/10  ✅ Excellent
-Code Quality   ████░░░░░░ 4/10  ⚠️  Needs Work
-Testing        ██░░░░░░░░ 2/10  🔴 Critical
+Code Quality   █████░░░░░ 5/10  ⚠️  Improving
+Testing        ██████░░░░ 6/10  🟡 Stabilized
 Documentation  █████░░░░░ 5/10  ⚠️  Partial
 Security       ███████░░░ 7/10  ✅ Good
 Performance    ██░░░░░░░░ 2/10  🔴 Not Optimized
-DevOps         ███░░░░░░░ 3/10  🔴 Manual
+DevOps         ████░░░░░░ 4/10  ⚠️  Better
 ```
 
 ---
