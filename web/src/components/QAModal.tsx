@@ -15,7 +15,7 @@ interface QAModalProps {
   debateId: string
 }
 
-export const QAModal: React.FC<QAModalProps> = ({ isOpen, onClose, debateId: _debateId }) => {
+export const QAModal: React.FC<QAModalProps> = ({ isOpen, onClose, debateId }) => {
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: '1',
@@ -94,6 +94,7 @@ export const QAModal: React.FC<QAModalProps> = ({ isOpen, onClose, debateId: _de
     >
       <div
         className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col animate-scale-up"
+        data-debate-id={debateId}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

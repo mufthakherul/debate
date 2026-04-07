@@ -1,12 +1,12 @@
 import { Router, Response } from 'express';
-import { PrismaClient, DebateStatus, Role } from '@prisma/client';
+import { DebateStatus, Role } from '@prisma/client';
 import { body, param } from 'express-validator';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { AppError } from '../middleware/errorHandler';
+import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
-const prisma = new PrismaClient();
 
 // List debates (with filtering)
 router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {

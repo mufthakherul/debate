@@ -92,6 +92,8 @@ model User {
   participants       DebateParticipant[]
   scores             Score[]
   notifications      Notification[]
+
+  @@index([createdAt])
   
   @@map("users")
 }
@@ -104,6 +106,8 @@ model RefreshToken {
   
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   
   @@map("refresh_tokens")
 }
@@ -142,6 +146,12 @@ model Debate {
   rounds       DebateRound[]
   scores       Score[]
   streamSession StreamSession?
+
+  @@index([creatorId])
+  @@index([topicId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([createdAt])
   
   @@map("debates")
 }
@@ -159,6 +169,8 @@ model DebateParticipant {
   debate   Debate @relation(fields: [debateId], references: [id], onDelete: Cascade)
   
   scores Score[]
+
+  @@index([userId])
   
   @@unique([debateId, userId])
   @@map("debate_participants")
@@ -173,6 +185,8 @@ model DebateRound {
   
   debateId String
   debate   Debate @relation(fields: [debateId], references: [id], onDelete: Cascade)
+
+  @@index([debateId])
   
   @@unique([debateId, order])
   @@map("debate_rounds")
@@ -188,6 +202,10 @@ model Topic {
   updatedAt   DateTime        @updatedAt
   
   debates Debate[]
+
+  @@index([category])
+  @@index([difficulty])
+  @@index([createdAt])
   
   @@map("topics")
 }
@@ -211,6 +229,11 @@ model Score {
   
   participantId String
   participant   DebateParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([debateId])
+  @@index([judgeId])
+  @@index([participantId])
+  @@index([createdAt])
   
   @@map("scores")
 }
@@ -224,6 +247,10 @@ model Notification {
   
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
   
   @@map("notifications")
 }
@@ -241,6 +268,9 @@ model StreamSession {
   
   platforms    StreamPlatform[]
   stats        StreamStats[]
+
+  @@index([status])
+  @@index([createdAt])
   
   @@map("stream_sessions")
 }
@@ -258,6 +288,10 @@ model StreamPlatform {
   
   sessionId      String
   session        StreamSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([platform])
+  @@index([status])
   
   @@unique([sessionId, platform])
   @@map("stream_platforms")
@@ -273,6 +307,9 @@ model StreamStats {
   
   sessionId      String
   session        StreamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([recordedAt])
   
   @@map("stream_stats")
 }

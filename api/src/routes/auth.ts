@@ -2,16 +2,15 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { PrismaClient } from '@prisma/client';
 import { body } from 'express-validator';
 import { config } from '../config';
 import { validateRequest } from '../middleware/validation';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
+import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
-const prisma = new PrismaClient();
 
 // Helper function to generate access token
 const generateAccessToken = (userId: string, role: string): string => {

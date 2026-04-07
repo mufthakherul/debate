@@ -1,12 +1,12 @@
 import { Router, Response } from 'express';
-import { PrismaClient, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { body, param } from 'express-validator';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { AppError } from '../middleware/errorHandler';
+import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
-const prisma = new PrismaClient();
 
 // Submit score (judges only)
 router.post(
