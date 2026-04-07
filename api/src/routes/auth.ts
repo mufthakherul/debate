@@ -8,6 +8,7 @@ import { validateRequest } from '../middleware/validation';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
+import { asyncHandler } from '../utils/asyncHandler';
 import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
@@ -24,7 +25,7 @@ const generateAccessToken = (userId: string, role: string): string => {
 // Helper function to generate refresh token
 const generateRefreshToken = (userId: string, role: string): string => {
   return jwt.sign(
-    { userId, role },
+    { userId, role, jti: crypto.randomUUID() },
     config.jwt.refreshTokenSecret as jwt.Secret,
     { expiresIn: config.jwt.refreshTokenTTL } as jwt.SignOptions
   );
@@ -61,7 +62,7 @@ router.post(
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
     validateRequest,
   ],
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
     try {
       const { email, username, password } = req.body;
       
@@ -115,7 +116,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Login endpoint
@@ -126,7 +127,7 @@ router.post(
     body('password').notEmpty().withMessage('Password is required'),
     validateRequest,
   ],
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
     try {
       const { username, password } = req.body;
       
@@ -175,11 +176,11 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Refresh token endpoint
-router.post('/refresh', async (req: Request, res: Response) => {
+router.post('/refresh', asyncHandler(async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     
@@ -220,10 +221,10 @@ router.post('/refresh', async (req: Request, res: Response) => {
     }
     throw error;
   }
-});
+}));
 
 // Logout endpoint
-router.post('/logout', requireAuth, async (req: AuthRequest, res: Response) => {
+router.post('/logout', requireAuth, asyncHandler(async (req: AuthRequest, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     
@@ -242,7 +243,7 @@ router.post('/logout', requireAuth, async (req: AuthRequest, res: Response) => {
   } catch (error) {
     throw error;
   }
-});
+}));
 
 // Password reset request endpoint
 router.post(
@@ -251,7 +252,7 @@ router.post(
     body('email').isEmail().withMessage('Invalid email'),
     validateRequest,
   ],
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
       
@@ -290,7 +291,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Password reset confirm endpoint
@@ -301,7 +302,7 @@ router.post(
     body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
     validateRequest,
   ],
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
     try {
       const { token, newPassword } = req.body;
       
@@ -340,7 +341,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 export default router;

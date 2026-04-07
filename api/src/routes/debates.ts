@@ -4,12 +4,13 @@ import { body, param } from 'express-validator';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { AppError } from '../middleware/errorHandler';
+import { asyncHandler } from '../utils/asyncHandler';
 import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
 
 // List debates (with filtering)
-router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
+router.get('/', requireAuth, asyncHandler(async (req: AuthRequest, res: Response) => {
   try {
     const { status, isPublic } = req.query;
     const userId = req.user!.userId;
@@ -59,10 +60,10 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
   } catch (error) {
     throw error;
   }
-});
+}));
 
 // Get debate by ID
-router.get('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+router.get('/:id', requireAuth, asyncHandler(async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user!.userId;
@@ -122,7 +123,7 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
   } catch (error) {
     throw error;
   }
-});
+}));
 
 // Create debate
 router.post(
@@ -136,7 +137,7 @@ router.post(
     body('isPublic').optional().isBoolean(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { title, description, topicId, isPublic } = req.body;
       
@@ -168,7 +169,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Update debate
@@ -184,7 +185,7 @@ router.put(
     body('isPublic').optional().isBoolean(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { title, description, topicId, isPublic } = req.body;
@@ -222,7 +223,7 @@ router.put(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Delete debate
@@ -234,7 +235,7 @@ router.delete(
     param('id').isString(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       
@@ -249,7 +250,7 @@ router.delete(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Assign participant to debate
@@ -264,7 +265,7 @@ router.post(
     body('teamSide').optional().isIn(['AFFIRMATIVE', 'NEGATIVE', 'NEUTRAL']),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { userId, role, teamSide } = req.body;
@@ -322,7 +323,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Add round to debate
@@ -337,7 +338,7 @@ router.post(
     body('durationSeconds').isInt({ min: 1 }).withMessage('Duration must be positive'),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { order, type, durationSeconds } = req.body;
@@ -369,7 +370,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Update debate status
@@ -383,7 +384,7 @@ router.patch(
     body('scheduledAt').optional().isISO8601().withMessage('Invalid date format'),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { status, scheduledAt } = req.body;
@@ -438,7 +439,7 @@ router.patch(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 export default router;

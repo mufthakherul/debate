@@ -4,12 +4,13 @@ import { body, param } from 'express-validator';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { AppError } from '../middleware/errorHandler';
+import { asyncHandler } from '../utils/asyncHandler';
 import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
 
 // List topics (public)
-router.get('/', async (req, res: Response) => {
+router.get('/', asyncHandler(async (req, res: Response) => {
   try {
     const { category, difficulty } = req.query;
     
@@ -30,10 +31,10 @@ router.get('/', async (req, res: Response) => {
   } catch (error) {
     throw error;
   }
-});
+}));
 
 // Get topic by ID (public)
-router.get('/:id', async (req, res: Response) => {
+router.get('/:id', asyncHandler(async (req, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -54,7 +55,7 @@ router.get('/:id', async (req, res: Response) => {
   } catch (error) {
     throw error;
   }
-});
+}));
 
 // Create topic
 router.post(
@@ -68,7 +69,7 @@ router.post(
     body('difficulty').optional().isIn(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { title, description, category, difficulty } = req.body;
       
@@ -85,7 +86,7 @@ router.post(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Update topic
@@ -101,7 +102,7 @@ router.put(
     body('difficulty').optional().isIn(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { title, description, category, difficulty } = req.body;
@@ -125,7 +126,7 @@ router.put(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Delete topic
@@ -137,7 +138,7 @@ router.delete(
     param('id').isString(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       
@@ -161,7 +162,7 @@ router.delete(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 export default router;

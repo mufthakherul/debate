@@ -7,9 +7,12 @@ All strategic docs now include a real implementation progress snapshot.
 Implemented now:
 - ✅ Critical fixes: frontend lint blockers, Prisma pooling, graceful shutdown, Jest compatibility.
 - ✅ Medium fixes: Swagger scaffold and database indexes.
+- ✅ Backend auth tests now pass against local PostgreSQL.
+- ✅ Frontend build is verified end-to-end.
 
-Pending due environment:
-- ⚠️ Backend test pass and coverage verification (requires local PostgreSQL at localhost:5432).
+Pending next:
+- ⚠️ Broader coverage expansion beyond auth.
+- ⚠️ Optional toolchain cleanup for the remaining TypeScript support warning in ESLint.
 
 ---
 

@@ -3,12 +3,13 @@ import { param } from 'express-validator';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { AppError } from '../middleware/errorHandler';
+import { asyncHandler } from '../utils/asyncHandler';
 import { prisma } from '../lib/prisma';
 
 const router: Router = Router();
 
 // List notifications for current user
-router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
+router.get('/', requireAuth, asyncHandler(async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     const { unreadOnly } = req.query;
@@ -29,7 +30,7 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
   } catch (error) {
     throw error;
   }
-});
+}));
 
 // Mark notification as read
 router.patch(
@@ -39,7 +40,7 @@ router.patch(
     param('id').isString(),
     validateRequest,
   ],
-  async (req: AuthRequest, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const userId = req.user!.userId;
@@ -65,11 +66,11 @@ router.patch(
     } catch (error) {
       throw error;
     }
-  }
+  })
 );
 
 // Mark all notifications as read
-router.post('/mark-all-read', requireAuth, async (req: AuthRequest, res: Response) => {
+router.post('/mark-all-read', requireAuth, asyncHandler(async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     
@@ -87,6 +88,6 @@ router.post('/mark-all-read', requireAuth, async (req: AuthRequest, res: Respons
   } catch (error) {
     throw error;
   }
-});
+}));
 
 export default router;

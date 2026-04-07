@@ -12,14 +12,14 @@
 - ✅ Database indexing pass applied in prisma schema for common query paths.
 
 ### Validation status
-- ✅ web: pnpm lint passes (only TypeScript support warning remains from eslint plugin).
+- ✅ web: pnpm lint passes (only the upstream TypeScript support warning from the ESLint plugin remains).
 - ✅ web: pnpm build passes.
 - ✅ api: pnpm lint passes.
 - ✅ api: pnpm build passes.
-- ⚠️ api: pnpm test now starts correctly, but fails because local Postgres is unavailable at localhost:5432 in this environment.
+- ✅ api: pnpm test passes against the local PostgreSQL runtime.
 
-### Remaining immediate blocker
-- ⛔ Integration tests require a running PostgreSQL instance.
+### Remaining note
+- ℹ️ The current repo still emits the known TypeScript version warning from @typescript-eslint, but it does not block lint or build.
 
 ---
 
