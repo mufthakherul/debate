@@ -409,7 +409,7 @@ cd api && pnpm test:coverage
 # Should show: >80% coverage
 
 # Visit Swagger docs (when running)
-curl http://localhost:3001/api/docs    # Should return Swagger UI
+curl http://localhost:8000/api/docs    # Should return Swagger UI
 ```
 
 ### Phase 4 Verification

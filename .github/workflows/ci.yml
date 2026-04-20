@@ -2,15 +2,24 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  api-tests:
-    name: API Tests
+  api-ci:
+    name: API Lint Build Test
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 20
+
     services:
       postgres:
         image: postgres:16-alpine
@@ -21,95 +30,97 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U debate_user -d debate_db"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://debate_user:debate_pass@localhost:5432/debate_db?schema=public
+      JWT_SECRET: test-jwt-secret
+      REFRESH_TOKEN_SECRET: test-refresh-secret
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: 10
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: 20
+          cache: pnpm
           cache-dependency-path: api/pnpm-lock.yaml
-      
-      - name: Install dependencies
-        working-directory: ./api
-        run: pnpm install
-      
-      - name: Generate Prisma Client
-        working-directory: ./api
-        run: pnpm prisma:generate
-        env:
-          DATABASE_URL: postgresql://debate_user:debate_pass@localhost:5432/debate_db?schema=public
-      
-      - name: Run Prisma migrations
-        working-directory: ./api
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: postgresql://debate_user:debate_pass@localhost:5432/debate_db?schema=public
-      
-      - name: Lint API
-        working-directory: ./api
-        run: pnpm lint
-      
-      - name: Build API
-        working-directory: ./api
-        run: pnpm build
-      
-      - name: Test API
-        working-directory: ./api
-        run: pnpm test
-        env:
-          DATABASE_URL: postgresql://debate_user:debate_pass@localhost:5432/debate_db?schema=public
-          JWT_SECRET: test-jwt-secret
-          REFRESH_TOKEN_SECRET: test-refresh-secret
 
-  web-tests:
-    name: Web Tests
+      - name: Install dependencies
+        working-directory: api
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        working-directory: api
+        run: pnpm prisma:generate
+
+      - name: Sync test database schema
+        working-directory: api
+        run: npx prisma db push --skip-generate
+
+      - name: Lint API
+        working-directory: api
+        run: pnpm lint
+
+      - name: Build API
+        working-directory: api
+        run: pnpm build
+
+      - name: Test API
+        working-directory: api
+        run: pnpm test
+
+  web-ci:
+    name: Web Lint Build
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 15
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: 10
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: 20
+          cache: pnpm
           cache-dependency-path: web/pnpm-lock.yaml
-      
+
       - name: Install dependencies
-        working-directory: ./web
-        run: pnpm install
-      
-      - name: Lint
-        working-directory: ./web
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint web
+        working-directory: web
         run: pnpm lint
-      
-      - name: Build Web
-        working-directory: ./web
+
+      - name: Build web
+        working-directory: web
         run: pnpm build
 
-  docker-build:
-    name: Docker Build
+  docker-build-validation:
+    name: Docker Build Validation
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 20
+
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Build Docker images
-        run: docker-compose build
+
+      - name: Build API image
+        run: docker build -f api/Dockerfile -t debate-api:ci ./api
+
+      - name: Build Web image
+        run: docker build -f web/Dockerfile -t debate-web:ci ./web

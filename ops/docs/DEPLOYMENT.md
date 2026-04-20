@@ -17,13 +17,19 @@
 
 2. **Set up environment variables**
    ```bash
+   cp .env.example .env
    cp api/.env.example api/.env
    cp web/.env.example web/.env
    ```
 
 3. **Start services with Docker**
    ```bash
-   docker-compose up -d
+   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+   ```
+
+   For local development with live reload:
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
    ```
 
 4. **Run database migrations**
@@ -59,19 +65,22 @@
 
 1. **Build for production**
    ```bash
-   docker-compose -f docker-compose.prod.yml build
+   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
    ```
+
+> Note: The development stack is available with `docker-compose.dev.yml` and does not override the production configuration unless explicitly specified.
 
 2. **Deploy to server**
    - Use your preferred cloud provider (AWS, Azure, GCP, etc.)
    - Ensure environment variables are properly configured
+   - Set `NODE_ENV=production` and secure secrets
    - Set up SSL/TLS certificates
    - Configure reverse proxy (nginx/traefik)
 
 ### Monitoring
 
 - Health check endpoint: `GET /api/health`
-- Check logs: `docker-compose logs -f`
+- Check logs: `docker compose logs -f`
 
 ### Backup & Recovery
 
@@ -90,13 +99,13 @@
 ### Common Issues
 
 1. **Port conflicts**
-   - Check if ports 3001, 5173, 5432 are available
+   - Check if ports 3000, 8000, 5432 are available
    - Modify docker-compose.yml if needed
 
 2. **Database connection issues**
    - Verify DATABASE_URL in api/.env
-   - Check PostgreSQL container status: `docker-compose ps`
+   - Check PostgreSQL container status: `docker compose ps`
 
 3. **Build failures**
    - Clear node_modules: `rm -rf */node_modules`
-   - Clear Docker cache: `docker-compose down -v`
+   - Clear Docker cache: `docker compose down -v`

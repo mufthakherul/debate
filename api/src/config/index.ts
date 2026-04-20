@@ -2,12 +2,29 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const requiredEnv = [
+  'DATABASE_URL',
+  'JWT_SECRET',
+  'REFRESH_TOKEN_SECRET',
+];
+
+if (process.env.NODE_ENV === 'production') {
+  requiredEnv.forEach((envName) => {
+    if (!process.env[envName]) {
+      throw new Error(`Missing required environment variable: ${envName}`);
+    }
+  });
+}
+
 export const config = {
-  port: parseInt(process.env.PORT || '3001', 10),
+  port: parseInt(process.env.PORT || '8000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
+  logFormat: process.env.LOG_FORMAT || 'pretty',
   
   database: {
-    url: process.env.DATABASE_URL || '',
+    url:
+      process.env.DATABASE_URL ||
+      'postgresql://debate_user:debate_pass@localhost:5432/debate_db',
   },
   
   jwt: {
@@ -22,7 +39,7 @@ export const config = {
   },
   
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-    allowedOrigins: process.env.CORS_ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173'],
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    allowedOrigins: process.env.CORS_ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
   },
 };
