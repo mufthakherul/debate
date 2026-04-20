@@ -1,63 +1,76 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: debate-postgres
     environment:
-      POSTGRES_USER: debate_user
-      POSTGRES_PASSWORD: debate_pass
-      POSTGRES_DB: debate_db
+      POSTGRES_USER: ${POSTGRES_USER:-debate_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-debate_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-debate_db}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - debate-network
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U debate_user -d debate_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-debate_user} -d ${POSTGRES_DB:-debate_db}"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+    networks:
+      - debate-network
 
   api:
     build:
       context: ./api
       dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+    image: debate-api:latest
     container_name: debate-api
     environment:
-      DATABASE_URL: postgresql://debate_user:debate_pass@postgres:5432/debate_db?schema=public
+      DATABASE_URL: ${DATABASE_URL:-postgresql://debate_user:debate_pass@postgres:5432/debate_db?schema=public}
       JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
-      PORT: 3001
-      NODE_ENV: production
-      CORS_ORIGIN: http://localhost:5173
-    ports:
-      - "3001:3001"
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET:-change-this-in-production}
+      ACCESS_TOKEN_TTL: ${ACCESS_TOKEN_TTL:-15m}
+      REFRESH_TOKEN_TTL: ${REFRESH_TOKEN_TTL:-7d}
+      PASSWORD_RESET_TTL: ${PASSWORD_RESET_TTL:-1h}
+      PORT: ${API_PORT:-8000}
+      NODE_ENV: ${NODE_ENV:-production}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - debate-network
-    volumes:
-      - ./api:/app
-      - /app/node_modules
 
   web:
     build:
       context: ./web
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    image: debate-web:latest
     container_name: debate-web
     environment:
-      VITE_API_URL: http://localhost:3001
-    ports:
-      - "5173:5173"
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
     depends_on:
-      - api
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - debate-network
-    volumes:
-      - ./web:/app
-      - /app/node_modules
 
 volumes:
   postgres_data:

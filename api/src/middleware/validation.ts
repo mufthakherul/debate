@@ -10,8 +10,20 @@ export const validateRequest = (
   const errors = validationResult(req);
   
   if (!errors.isEmpty()) {
-    const errorMessages = errors.array().map(err => err.msg).join(', ');
-    throw new AppError(400, errorMessages);
+    const formattedErrors = errors.array().map((err) => {
+      const validationError = err as Record<string, unknown>;
+      return {
+        field: (validationError.path as string) || (validationError.param as string) || 'body',
+        message: err.msg,
+      };
+    });
+
+    throw new AppError(
+      400,
+      'Validation failed for the request body',
+      true,
+      formattedErrors
+    );
   }
   
   next();

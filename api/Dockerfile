@@ -1,17 +1,31 @@
-FROM node:20-alpine
+FROM node:20-bullseye-slim AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN apt-get update -y && apt-get install -y openssl libssl1.1 && rm -rf /var/lib/apt/lists/*
 
-RUN npm ci --only=production
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+
+RUN npm install
 
 COPY . .
 
 RUN npx prisma generate
-
 RUN npm run build
+RUN npm prune --production
 
-EXPOSE 3001
+FROM node:20-bullseye-slim AS runtime
 
-CMD ["npm", "start"]
+WORKDIR /app
+RUN apt-get update -y && apt-get install -y openssl libssl1.1 && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+ENV NODE_ENV=production
+EXPOSE 8000
+
+USER node
+CMD ["node", "dist/index.js"]

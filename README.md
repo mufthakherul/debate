@@ -86,7 +86,7 @@ The platform features a redesigned live debate interface at `/live-debate` with 
   - Smooth animations for modals and transitions
 
 **Access:**
-1. Navigate to `http://localhost:5173/live-debate` (currently uses mock data)
+1. Navigate to `http://localhost:3000/live-debate` (currently uses mock data)
 2. The page is accessible without authentication for development purposes
 
 ### Quick Start with Docker
@@ -105,7 +105,8 @@ The platform features a redesigned live debate interface at `/live-debate` with 
 
 3. **Start all services**
    ```bash
-   docker-compose up -d
+   cp .env.example .env
+   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
    ```
 
 4. **Run database migrations**
@@ -116,9 +117,19 @@ The platform features a redesigned live debate interface at `/live-debate` with 
    ```
 
 5. **Access the application**
-   - Web interface: http://localhost:5173
-   - API: http://localhost:3001
-   - API health check: http://localhost:3001/api/health
+   - Web interface: http://localhost:3000
+   - API: http://localhost:8000
+   - API health check: http://localhost:8000/api/health
+
+> For fast local development with hot reload, use:
+> ```bash
+> docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+> ```
+
+> For production-style deployment with explicit port mappings:
+> ```bash
+> docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+> ```
 
 ### Manual Setup (Without Docker)
 

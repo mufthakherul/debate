@@ -1,0 +1,57 @@
+name: Docker Compose Smoke Test
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - api/**
+      - web/**
+      - docker-compose.yml
+      - .github/workflows/compose-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compose-smoke:
+    name: Compose Up and Health Smoke Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and start services
+        run: docker compose up -d --build
+
+      - name: Wait for API health endpoint
+        shell: bash
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:8000/api/health > /dev/null; then
+              echo "API health check passed"
+              exit 0
+            fi
+            echo "Waiting for API to be healthy... ($i/30)"
+            sleep 5
+          done
+          echo "API failed to become healthy"
+          docker compose logs --tail 200
+          exit 1
+
+      - name: Check web endpoint
+        run: curl -fsS http://localhost:3000 > /dev/null
+
+      - name: Print running container status
+        if: always()
+        run: docker compose ps --all
+
+      - name: Print logs on failure
+        if: failure()
+        run: docker compose logs --tail 200
+
+      - name: Tear down compose stack
+        if: always()
+        run: docker compose down --volumes --remove-orphans
